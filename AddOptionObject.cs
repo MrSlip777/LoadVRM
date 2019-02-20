@@ -16,6 +16,8 @@
 using System.Text;
 using UnityEditor;
 using UnityEngine;
+using System.Collections;
+using System.IO;
 
 namespace VRM
 {
@@ -23,14 +25,18 @@ namespace VRM
     public class AddOptionObject : ScriptableWizard
     {
 
+        static public Object[] objects;
         static public AddObjectSetting setting;
         static public GameObject parentObject;
 
-        public static void CreateWizard()
-        {    
-            setting = (AddObjectSetting)Resources.Load("AttachObjectSetting/ObjectSetting1");
-            parentObject = GameObject.Find(setting.parentPartName);
+        //[SerializeField]
+        //Toggle toggle1,toggle2;
 
+        public static void CreateWizard()
+        {
+            objects = Resources.LoadAll("AttachObjectSetting");
+            
+        
             var wiz = ScriptableWizard.DisplayWizard<AddOptionObject>(
                 "AddOptionObject", "Add");
             var go = Selection.activeObject as GameObject;
@@ -39,13 +45,16 @@ namespace VRM
 
         void OnWizardCreate()
         {
-            GameObject childObject = Instantiate(setting.Object1) as GameObject;
-            
-            childObject.transform.parent = parentObject.transform;
-            childObject.transform.localEulerAngles = setting.rotation;
-            childObject.transform.localScale = setting.scale;
-            childObject.transform.localPosition = setting.position;
-            
+            for(int i = 0;  i<objects.Length; i++){
+                setting = (AddObjectSetting)objects[i];
+                GameObject childObject = Instantiate(setting.Object) as GameObject;
+                parentObject = GameObject.Find(setting.parentPartName);
+        
+                childObject.transform.parent = parentObject.transform;
+                childObject.transform.localEulerAngles = setting.rotation;
+                childObject.transform.localScale = setting.scale;
+                childObject.transform.localPosition = setting.position;
+            }
         }
 
         void OnWizardUpdate()

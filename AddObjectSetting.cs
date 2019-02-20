@@ -6,7 +6,7 @@ using UnityEngine;
 public class AddObjectSetting: ScriptableObject
 {
     public string parentPartName;
-    public GameObject Object1;
+    public GameObject Object;
     public Vector3 position;
     public Vector3 rotation;
     public Vector3 scale;
