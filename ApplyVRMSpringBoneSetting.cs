@@ -28,9 +28,13 @@ namespace VRM
         static public Object[] boneObjects;
         public List<string> ColliderTergetName = new List<string>();
         static public Object[] colliderObjects;
-
+        public string[] BoneSettingName = null;
+        public string[] ColliderSettingName = null;
+        
         public static void CreateWizard()
         {
+            boneObjects = Resources.LoadAll("SpringBoneData/SpringBone");
+            colliderObjects = Resources.LoadAll("SpringBoneData/Collider");
 
             var wiz = ScriptableWizard.DisplayWizard<ApplyVRMSpringBoneSetting>(
                 "ApplyVRMSpringBoneSetting", "Apply");
@@ -40,8 +44,6 @@ namespace VRM
 
         void OnWizardCreate()
         {
-            boneObjects = Resources.LoadAll("SpringBoneData/SpringBone");
-            colliderObjects = Resources.LoadAll("SpringBoneData/Collider");
             //設定ファイルに基づいてSpringBoneColliderを設定する
             ApplyVRMSpringBoneCollider();
             //設定ファイルに基づいてSpringBoneを設定する
@@ -108,7 +110,29 @@ namespace VRM
 
         void OnWizardUpdate()
         {
-
+            if(BoneSettingName == null){
+                BoneSettingName =  new string[boneObjects.Length];
+                for(int i = 0;  i<boneObjects.Length; i++){
+                    VRMSpringBoneSetting setting = (VRMSpringBoneSetting)boneObjects[i];
+                    BoneSettingName[i] = setting.RootBones[0];
+                    
+                    if(setting.m_comment == ""){
+                        
+                        BoneSettingName[i] = "右のボーンを含む→" + setting.RootBones[0];
+                    }
+                    else{
+                        BoneSettingName[i] = setting.m_comment;
+                    }
+                }
+            }
+            if(ColliderSettingName == null){
+                ColliderSettingName =  new string[colliderObjects.Length];
+                for(int i = 0;  i<colliderObjects.Length; i++){
+                    VRMSpringBoneColliderSetting setting
+                     = (VRMSpringBoneColliderSetting)colliderObjects[i];
+                    ColliderSettingName[i] = setting.TargetName;
+                }
+            }
         }
     }
 

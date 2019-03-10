@@ -24,13 +24,9 @@ namespace VRM
 
     public class AddOptionObject : ScriptableWizard
     {
-
         static public Object[] objects;
-        static public AddObjectSetting setting;
         static public GameObject parentObject;
-
-        //[SerializeField]
-        //Toggle toggle1,toggle2;
+        public string[] AddObjectName = null;
 
         public static void CreateWizard()
         {
@@ -46,7 +42,7 @@ namespace VRM
         void OnWizardCreate()
         {
             for(int i = 0;  i<objects.Length; i++){
-                setting = (AddObjectSetting)objects[i];
+                AddObjectSetting setting = (AddObjectSetting)objects[i];
                 GameObject childObject = Instantiate(setting.Object) as GameObject;
                 parentObject = GameObject.Find(setting.parentPartName);
         
@@ -59,7 +55,13 @@ namespace VRM
 
         void OnWizardUpdate()
         {
-
+            if(AddObjectName == null){
+                AddObjectName =  new string[objects.Length];
+                for(int i = 0;  i<objects.Length; i++){
+                    AddObjectSetting setting = (AddObjectSetting)objects[i];
+                    AddObjectName[i] = setting.parentPartName;
+                }
+            }
         }
     }
 
