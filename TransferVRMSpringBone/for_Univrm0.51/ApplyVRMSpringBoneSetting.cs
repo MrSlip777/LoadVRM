@@ -55,14 +55,20 @@ namespace VRM
 
             //モデル上でsecondaryの部分を探す
             GameObject targetObject = GameObject.Find("secondary");
+            //すべて削除してからスプリングボーンをつける
+            VRMSpringBone[] removeComponents = targetObject.GetComponents<VRMSpringBone>();
+            foreach(VRMSpringBone removeComponent in removeComponents){
+                DestroyImmediate(removeComponent);
+            }
 
-            Debug.Log("number:" + boneObjects.Length);
             //gizmo以外は設定を反映
             //transformはFind後したTransformを反映)
             for(int j = 0; j < boneObjects.Length; j++){
                 //設定データ
                 VRMSpringBoneSetting settingData = (VRMSpringBoneSetting)boneObjects[j];
                 //対象のボーン
+
+
                 VRMSpringBone springbone = targetObject.AddComponent<VRMSpringBone>();
                 
                 springbone.m_comment = settingData.m_comment;
@@ -91,10 +97,18 @@ namespace VRM
         }
 
         void ApplyVRMSpringBoneCollider(){
+            
+
             //gizmo以外は設定を反映する
             for(int j = 0; j<colliderObjects.Length; j++){
                 VRMSpringBoneColliderSetting settingData = (VRMSpringBoneColliderSetting)colliderObjects[j];
                 GameObject targetObject = GameObject.Find(settingData.TargetName);
+                VRMSpringBoneColliderGroup[] removeComponents = targetObject.GetComponents<VRMSpringBoneColliderGroup>();
+                //すべて削除してからコライダーをつける
+                foreach(VRMSpringBoneColliderGroup removeComponent in removeComponents){
+                    DestroyImmediate(removeComponent);
+                }
+
                 VRMSpringBoneColliderGroup collider = targetObject.AddComponent<VRMSpringBoneColliderGroup>();
                 
                 collider.Colliders = new VRMSpringBoneColliderGroup.SphereCollider[settingData.Colliders.Length];
