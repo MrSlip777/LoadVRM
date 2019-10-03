@@ -4,6 +4,7 @@
 # VRMSpringBoneをDynamicBoneに置換する方法
 <font color= Red>大まかな設定反映になります。細かい設定はDynamicBoneの各パラメータをいじってください（沼）</font>
 <br>
+<font color="Red">テキスト</font>
 
 ## VRMSpringBoneの設定を出力する手順
 1.HierarchyにVRMSpringBone、Colliderの設定を出力したいモデルを配置します<br>
