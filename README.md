@@ -2,7 +2,7 @@
 内容：VRMSpringBoneの設定出力と設定反映するスクリプト　が含まれています。<br>
 
 # VRMSpringBoneをDynamicBoneに置換する方法
-<font color="Red">大まかな設定反映になります。細かい設定はDynamicBoneの各パラメータをいじってください（沼）</font>
+<font color= Red>大まかな設定反映になります。細かい設定はDynamicBoneの各パラメータをいじってください（沼）</font>
 <br>
 
 ## VRMSpringBoneの設定を出力する手順
