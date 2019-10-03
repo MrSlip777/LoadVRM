@@ -17,6 +17,6 @@
 注意1）fbxファイルは一度、UniVRM-(バージョン名)→ExportHumanoidを実行してVRMファイル化してください<br>
 注意2）モデルはシーン上に1体だけおいてください。<br>
 
-3.メニューにて、UniVRM-(バージョン名)→ReflectSettingSpringBoneToDynamicBoneを選択します
-4.Applyボタンを押します
-5.モデル上のsecondaryにDynamicBone、各ボーンにDynamicBoneColliderが反映されていればOKです。
+3.メニューにて、UniVRM-(バージョン名)→ReflectSettingSpringBoneToDynamicBoneを選択します<br>
+4.Applyボタンを押します<br>
+5.モデル上のsecondaryにDynamicBone、各ボーンにDynamicBoneColliderが反映されていればOKです。<br>
