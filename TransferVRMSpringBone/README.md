@@ -49,3 +49,5 @@
 4.Applyボタンを押します<br>
 5.モデル上のsecondaryにVRMSpringBone、各ボーンにVRMSpringBoneColliderが反映されていればOKです。<br>
 
+# 3 DynamicBoneの設定値のファイル出力と設定反映
+※手順は作成中です。<br>
