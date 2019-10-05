@@ -1,5 +1,5 @@
 ﻿/*
- * VRMSpringBone、VRMSpringBoneCollider設定を削除するスクリプト
+ * DynamicBone、DynamicBoneColliderをオブジェクトから削除するスクリプト
  *
  * (C)2019 slip
  * This software is released under the MIT License.
@@ -22,15 +22,15 @@ using System.IO;
 
 namespace VRM
 {
-    public class RemoveVRMSpringBoneSetting : ScriptableWizard
+    public class RemoveDynamicBone : ScriptableWizard
     {
         static Object[] objects;
         List<string> ColliderTergetName = new List<string>();
 
         public static void CreateWizard()
         {
-            var wiz = ScriptableWizard.DisplayWizard<RemoveVRMSpringBoneSetting>(
-                "RemoveVRMSpringBoneSetting", "remove");
+            var wiz = ScriptableWizard.DisplayWizard<RemoveDynamicBone>(
+                "RemoveDynamicBoneSetting", "remove");
             var go = Selection.activeObject as GameObject;
         }
 
@@ -45,25 +45,26 @@ namespace VRM
         void SearchTarget(){
             //モデル上でsecondaryの部分を探す
             GameObject targetObject = GameObject.Find("secondary");
-            objects = targetObject.GetComponents<VRMSpringBone>();
+            objects = targetObject.GetComponents<DynamicBone>();
 
-            //gizmo以外はエクスポート　
-            //transformは名前をエクスポートする(インポート時にFindで探す)
+            //ボーンに紐付けられているコライダーをピックアップする
             for(int j = 0; j < objects.Length; j++){
-                VRMSpringBone springbone = (VRMSpringBone)objects[j];
+                DynamicBone dynamicbone = (DynamicBone)objects[j];
 
-                VRMSpringBoneSetting exportData
-                = ScriptableObject.CreateInstance<VRMSpringBoneSetting>();
+                DynamicBoneSetting exportData
+                = ScriptableObject.CreateInstance<DynamicBoneSetting>();
+                
+                exportData.m_Colliders = new List<string>();
+                foreach(DynamicBoneCollider collider in dynamicbone.m_Colliders){
+                    exportData.m_Colliders.Add(collider.name);
 
-                exportData.ColliderGroups = new string[springbone.ColliderGroups.Length];
-                for(int i = 0; i<springbone.ColliderGroups.Length; i++){
-                    exportData.ColliderGroups[i] = springbone.ColliderGroups[i].name;
+                    //コライダーのついているオブジェクトの名前を登録する（重複なし、なければ追加）
                     if(ColliderTergetName.Count == 0){
-                        ColliderTergetName.Add(exportData.ColliderGroups[i]);
+                        ColliderTergetName.Add(collider.name);
                     }
                     else{
-                        if(ColliderTergetName.IndexOf(exportData.ColliderGroups[i]) == -1){
-                            ColliderTergetName.Add(exportData.ColliderGroups[i]);
+                        if(ColliderTergetName.IndexOf(collider.name) == -1){
+                            ColliderTergetName.Add(collider.name);
                         };
                     }
                 }
@@ -72,8 +73,12 @@ namespace VRM
 
         void Remove(){
             for(int j = 0; j<ColliderTergetName.Count; j++){
-                GameObject colliderObject = GameObject.Find(ColliderTergetName[j]);
-                GameObject.DestroyImmediate(colliderObject.GetComponent<VRMSpringBoneColliderGroup>());
+                GameObject targetObject = GameObject.Find(ColliderTergetName[j]);
+                //ダイナミックボーンコライダーを削除
+                DynamicBoneCollider[] DynamicBoneComponents = targetObject.GetComponents<DynamicBoneCollider>();
+                foreach(DynamicBoneCollider removeComponent in DynamicBoneComponents){
+                    DestroyImmediate(removeComponent);
+                }
             }
 
             //モデル上でsecondaryの部分を探す
@@ -84,18 +89,18 @@ namespace VRM
         }
         void OnWizardUpdate(){
             helpString = "設定をExportしてから削除することを推奨します。 It is recommended to export the settings before deleting them.";
- 
+
         }
     }
 
-    public static class RemoveMenu
+    public static class RemoveMenuforDynamicBone
     {
-        const string ADD_OPTIONOBJECT_KEY = VRMVersion.VRM_VERSION + "/VRMSpringBone/RemoveSetting";
+        const string ADD_OPTIONOBJECT_KEY = VRMVersion.VRM_VERSION + "/DynamicBone/Remove";
 
         [MenuItem(ADD_OPTIONOBJECT_KEY)]
         private static void RemoveSettingMenu()
         {
-            RemoveVRMSpringBoneSetting.CreateWizard();
+            RemoveDynamicBone.CreateWizard();
         }
     }
 }
