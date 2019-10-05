@@ -1,5 +1,5 @@
 ﻿/*
- * VRMSprinBone設定をDynamicBoneへ反映、置換するスクリプト
+ * DynamicBone設定をVRMSpringBoneへ反映、置換するスクリプト
  *
  * (C)2019 slip
  * This software is released under the MIT License.
@@ -23,7 +23,7 @@ using VRM;
 
 namespace VRM
 {
-    public class ReflectSettingSpringBoneToDynamicBone : ScriptableWizard
+    public class ReflectSettingDynamicBoneToSpringBone  : ScriptableWizard
     {
         static public Object[] boneObjects;
         public List<string> ColliderTergetName = new List<string>();
@@ -33,11 +33,11 @@ namespace VRM
         
         public static void CreateWizard()
         {
-            boneObjects = Resources.LoadAll("SpringBoneData/SpringBone");
-            colliderObjects = Resources.LoadAll("SpringBoneData/Collider");
+            boneObjects = Resources.LoadAll("DynamicBoneData/DynamicBone");
+            colliderObjects = Resources.LoadAll("DynamicBoneData/Collider");
 
-            var wiz = ScriptableWizard.DisplayWizard<ReflectSettingSpringBoneToDynamicBone>(
-                "ReflectSettingSpringBoneToDynamicBone", "Apply");
+            var wiz = ScriptableWizard.DisplayWizard<ReflectSettingDynamicBoneToSpringBone>(
+                "ReflectSettingDynamicBoneToSpringBone", "Apply");
             var go = Selection.activeObject as GameObject;
 
         }
@@ -45,13 +45,13 @@ namespace VRM
         void OnWizardCreate()
         {
             //設定ファイルに基づいてSpringBoneColliderを設定する
-            ApplyDynamicBoneCollider();
+            ApplyVRMSpringBoneCollider();
             //設定ファイルに基づいてSpringBoneを設定する
-            ApplyDynamicBone();
+            ApplyVRMSpringBone();
 
         }
 
-        void ApplyDynamicBone(){
+        void ApplyVRMSpringBone(){
 
             //モデル上でsecondaryの部分を探す
             GameObject targetObject = GameObject.Find("secondary");
@@ -68,39 +68,48 @@ namespace VRM
                 DestroyImmediate(removeComponent);
             }
 
-            //gizmo以外は設定を反映
-            //transformはFind後したTransformを反映)
             for(int j = 0; j < boneObjects.Length; j++){
+                GameObject findObject = null;
                 //設定データ
-                VRMSpringBoneSetting settingData = (VRMSpringBoneSetting)boneObjects[j];
+                DynamicBoneSetting settingData = (DynamicBoneSetting)boneObjects[j];
+                //対象のボーン
+                VRMSpringBone springbone = targetObject.AddComponent<VRMSpringBone>();
+                
+                springbone.m_stiffnessForce = settingData.m_Stiffness * 4.0f;
 
-                //settingData.m_comment; 反映しない
-                //settingData.m_center 反映しない
-                //settingData.m_dragForce 反映しない
+                //重力の設定　大きさが0であればY方向-1に設定
+                //大きさは2以上は2にする
+                springbone.m_gravityPower = settingData.m_Gravity.magnitude;
 
-                for(int i = 0; i<settingData.RootBones.Length; i++){
-                    //対象のボーン
-                    DynamicBone dynamicbone = targetObject.AddComponent<DynamicBone>();
-                    dynamicbone.m_Colliders = new List<DynamicBoneColliderBase>(); 
-                    dynamicbone.m_Stiffness = settingData.m_stiffnessForce * 0.25f;
-                    dynamicbone.m_Gravity = settingData.m_gravityDir * settingData.m_gravityPower;
-                    GameObject findObject = GameObject.Find(settingData.RootBones[i]);
-                    dynamicbone.m_Root = findObject.GetComponent<Transform>();
-                    dynamicbone.m_Radius = settingData.m_hitRadius;
+                if(springbone.m_gravityPower>2.0f){
+                    springbone.m_gravityPower = 2.0f;
+                }
 
-                    for(int k = 0; k<settingData.ColliderGroups.Length; k++){
-                        findObject = GameObject.Find(settingData.ColliderGroups[k]);
-                        dynamicbone.m_Colliders.Add(findObject.GetComponent<DynamicBoneCollider>());
-                    }
+                if(springbone.m_gravityPower != 0){
+                    springbone.m_gravityDir = settingData.m_Gravity/settingData.m_Gravity.magnitude;
+                }
+                else{
+                    springbone.m_gravityDir = new Vector3(0,-1.0f,0);
+                }
+
+                springbone.RootBones = new List<Transform>();
+                findObject = GameObject.Find(settingData.m_Root);
+                springbone.RootBones.Add(findObject.GetComponent<Transform>());
+
+                springbone.m_hitRadius = settingData.m_Radius;
+
+                springbone.ColliderGroups = new VRMSpringBoneColliderGroup[settingData.m_Colliders.Count];
+                for(int i = 0; i<settingData.m_Colliders.Count; i++){
+                    findObject = GameObject.Find(settingData.m_Colliders[i]);
+                    springbone.ColliderGroups[i] = findObject.GetComponent<VRMSpringBoneColliderGroup>();
                 }
             }
-            
         }
 
-        void ApplyDynamicBoneCollider(){
+        void ApplyVRMSpringBoneCollider(){
             //gizmo以外は設定を反映する
             for(int j = 0; j<colliderObjects.Length; j++){
-                VRMSpringBoneColliderSetting settingData = (VRMSpringBoneColliderSetting)colliderObjects[j];
+                DynamicBoneColliderSetting settingData = (DynamicBoneColliderSetting)colliderObjects[j];
                 GameObject targetObject = GameObject.Find(settingData.TargetName);
 
                 //スプリングボーンコライダーを削除
@@ -115,12 +124,15 @@ namespace VRM
                     DestroyImmediate(removeComponent);
                 }
 
+                VRMSpringBoneColliderGroup collider = targetObject.AddComponent<VRMSpringBoneColliderGroup>();
+                
+                collider.Colliders = new VRMSpringBoneColliderGroup.SphereCollider[settingData.Colliders.Length];
                 for(int i = 0; i<settingData.Colliders.Length; i++){
-                    DynamicBoneCollider collider = targetObject.AddComponent<DynamicBoneCollider>();
-                    collider.m_Center = settingData.Colliders[i].Offset;
-                    collider.m_Radius = settingData.Colliders[i].Radius;
+                    
+                    collider.Colliders[i] = new VRMSpringBoneColliderGroup.SphereCollider();
+                    collider.Colliders[i].Radius = settingData.Colliders[i].m_Radius;
+                    collider.Colliders[i].Offset = settingData.Colliders[i].m_Center;
                 }
-
             }
         }
 
@@ -129,38 +141,32 @@ namespace VRM
             if(BoneSettingName == null){
                 BoneSettingName =  new string[boneObjects.Length];
                 for(int i = 0;  i<boneObjects.Length; i++){
-                    VRMSpringBoneSetting setting = (VRMSpringBoneSetting)boneObjects[i];
-                    if(setting.m_comment == ""){
-                        
-                        foreach(string name in setting.RootBones){
-                            BoneSettingName[i] = "右のボーンを含む→" + name;
-                            break;
-                        }
-                    }
-                    else{
-                        BoneSettingName[i] = setting.m_comment;
+                    DynamicBoneSetting setting = (DynamicBoneSetting)boneObjects[i];
+
+                    if(setting.m_Root != null){
+                        BoneSettingName[i] = setting.m_Root.ToString();
                     }
                 }
             }
             if(ColliderSettingName == null){
                 ColliderSettingName =  new string[colliderObjects.Length];
                 for(int i = 0;  i<colliderObjects.Length; i++){
-                    VRMSpringBoneColliderSetting setting
-                     = (VRMSpringBoneColliderSetting)colliderObjects[i];
+                    DynamicBoneColliderSetting setting
+                     = (DynamicBoneColliderSetting)colliderObjects[i];
                     ColliderSettingName[i] = setting.TargetName;
                 }
             }
         }                
     }
 
-    public static class RelfectDynamicBoneMenu
+    public static class RelfectVRMSpringBoneMenu
     {
-        const string ADD_OPTIONOBJECT_KEY = VRMVersion.VRM_VERSION + "/ReplaceBone/SpringBoneToDynamicBone";
+        const string ADD_OPTIONOBJECT_KEY = VRMVersion.VRM_VERSION + "/ReplaceBone/DynamicBoneToSpringBone";
 
         [MenuItem(ADD_OPTIONOBJECT_KEY)]
         private static void RelfectMenu()
         {
-           ReflectSettingSpringBoneToDynamicBone.CreateWizard();
+           ReflectSettingDynamicBoneToSpringBone.CreateWizard();
         }
     }    
 }

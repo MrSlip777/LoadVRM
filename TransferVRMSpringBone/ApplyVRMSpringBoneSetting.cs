@@ -150,7 +150,7 @@ namespace VRM
 
     public static class ApplyMenu
     {
-        const string ADD_OPTIONOBJECT_KEY = VRMVersion.VRM_VERSION + "/ApplyVRMSpringBoneSetting";
+        const string ADD_OPTIONOBJECT_KEY = VRMVersion.VRM_VERSION + "/VRMSpringBone/ApplySetting";
 
         [MenuItem(ADD_OPTIONOBJECT_KEY)]
         private static void ApplySettingMenu()

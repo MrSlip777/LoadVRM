@@ -31,10 +31,6 @@ namespace VRM
         public static void CreateWizard()
         {
 
-            //モデル上でsecondaryの部分を探す
-            GameObject targetObject = GameObject.Find("secondary");
-            objects = targetObject.GetComponents<VRMSpringBone>();
-
             var wiz = ScriptableWizard.DisplayWizard<ExportVRMSpringBoneSetting>(
                 "ExportVRMSpringBoneSetting", "export");
             var go = Selection.activeObject as GameObject;
@@ -50,6 +46,10 @@ namespace VRM
         }
 
         void ExportVRMSpringBone(){
+            //モデル上でsecondaryの部分を探す
+            GameObject targetObject = GameObject.Find("secondary");
+            objects = targetObject.GetComponents<VRMSpringBone>();
+
             //gizmo以外はエクスポート　
             //transformは名前をエクスポートする(インポート時にFindで探す)
             for(int j = 0; j < objects.Length; j++){
@@ -85,7 +85,7 @@ namespace VRM
                 }
 
                 AssetDatabase.CreateAsset(
-                    exportData, "Assets/Model/Resources/SpringBoneData/SpringBone/VRMSpringBoneData_"+j+".asset");
+                    exportData, "Assets/Models/Resources/SpringBoneData/SpringBone/VRMSpringBoneData_"+j+".asset");
             }
         }
 
@@ -105,7 +105,7 @@ namespace VRM
                 }
 
                 AssetDatabase.CreateAsset(
-                        exportData, "Assets/Model/Resources/SpringBoneData/Collider/VRMSpringBoneColliderData_"+j+".asset");
+                        exportData, "Assets/Models/Resources/SpringBoneData/Collider/VRMSpringBoneColliderData_"+j+".asset");
             }
         }
 
@@ -117,7 +117,7 @@ namespace VRM
 
     public static class ExportMenu
     {
-        const string ADD_OPTIONOBJECT_KEY = VRMVersion.MENU + "/ExportVRMSpringBoneSetting";
+        const string ADD_OPTIONOBJECT_KEY = VRMVersion.VRM_VERSION + "/VRMSpringBone/ExportSetting";
 
         [MenuItem(ADD_OPTIONOBJECT_KEY)]
         private static void ExportSettingMenu()

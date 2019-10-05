@@ -22,15 +22,15 @@ using System.IO;
 
 namespace VRM
 {
-    public class DeleteVRMSpringBoneSetting : ScriptableWizard
+    public class RemoveVRMSpringBoneSetting : ScriptableWizard
     {
         static Object[] objects;
         List<string> ColliderTergetName = new List<string>();
 
         public static void CreateWizard()
         {
-            var wiz = ScriptableWizard.DisplayWizard<DeleteVRMSpringBoneSetting>(
-                "DeleteVRMSpringBoneSetting", "delete");
+            var wiz = ScriptableWizard.DisplayWizard<RemoveVRMSpringBoneSetting>(
+                "RemoveVRMSpringBoneSetting", "remove");
             var go = Selection.activeObject as GameObject;
         }
 
@@ -39,7 +39,7 @@ namespace VRM
             //削除対象を探す
             SearchTarget();
             //スプリングボーンとコライダーを削除する
-            Delete();
+            Remove();
         }
 
         void SearchTarget(){
@@ -70,7 +70,7 @@ namespace VRM
             }
         }
 
-        void Delete(){
+        void Remove(){
             for(int j = 0; j<ColliderTergetName.Count; j++){
                 GameObject colliderObject = GameObject.Find(ColliderTergetName[j]);
                 GameObject.DestroyImmediate(colliderObject.GetComponent<VRMSpringBoneColliderGroup>());
@@ -88,14 +88,14 @@ namespace VRM
         }
     }
 
-    public static class DeleteMenu
+    public static class RemoveMenu
     {
-        const string ADD_OPTIONOBJECT_KEY = VRMVersion.VRM_VERSION + "/DeleteVRMSpringBoneSetting";
+        const string ADD_OPTIONOBJECT_KEY = VRMVersion.VRM_VERSION + "/VRMSpringBone/RemoveSetting";
 
         [MenuItem(ADD_OPTIONOBJECT_KEY)]
-        private static void DeleteSettingMenu()
+        private static void RemoveSettingMenu()
         {
-            DeleteVRMSpringBoneSetting.CreateWizard();
+            RemoveVRMSpringBoneSetting.CreateWizard();
         }
     }
 }
