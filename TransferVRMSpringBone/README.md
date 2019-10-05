@@ -1,3 +1,12 @@
+# 0 準備
+本スクリプトはUnity上で動作します。<br>
+また、UniVRM,DynamicBoneが必要となるのでインポートしてください。<br>
+
+[動作確認済みの環境]<br>
+・Unity 2019 2.0f1<br>
+・UniVRM 0.53<br>
+・DynamicBone 1.2.0<br>
+
 # 1 VRMSpringBoneをDynamicBoneに置換する方法
 大まかな設定反映になります。細かい設定はDynamicBoneの各パラメータをいじってください。<br>
 
