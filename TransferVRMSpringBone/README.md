@@ -85,11 +85,12 @@
 注意2）ボーンはsecondaryオブジェクトに付けられたモノのみ削除します。<br>
 注意3）コライダーはボーンと紐付くオブジェクトに付けられたモノのみ削除します。<br>
 
-# 1 VRMSpringBoneをDynamicBoneに置換する方法
-大まかな設定反映になります。細かい設定はDynamicBoneの各パラメータをいじってください。<br>
+# 3 VRMSpringBone,DynamicBoneの置換
+大まかな設定反映になります。細かい設定はそれぞれのボーン、コライダーの各パラメータで調整してください。<br>
 
-## 1.2 DyanamicBoneにVRMSpringBoneの設定を反映、置換する
-1.Colliderフォルダ、SpringBoneフォルダにVRMSpringBone、Colliderの設定ファイルがあることを確認します。<br>
+## 3.1 DyanamicBoneにVRMSpringBoneの設定を反映、置換する
+1.Colliderフォルダ、SpringBoneフォルダにVRMSpringBone、Colliderの設定ファイル(.asset)を作成しておきます。<br>
+※1.1 設定をassetファイル出力する を参考にしてください。<br>
 2.HierarchyにVRMSpringBone、Colliderの設定を反映したいモデルを配置します<br>
 注意1）fbxファイルは一度、UniVRM-(バージョン名)→ExportHumanoidを実行してVRMファイル化してください<br>
 注意2）モデルはシーン上に1体だけおいてください。<br>
@@ -98,11 +99,9 @@
 4.Applyボタンを押します<br>
 5.モデル上のsecondaryにDynamicBone、各ボーンにDynamicBoneColliderが反映されていればOKです。<br>
 
-# 2 DynamicBoneをVRMSpringBoneに置換する方法
-大まかな設定反映になります。細かい設定はVRMSpringBoneの各パラメータをいじってください。<br>
-
-## 2.1 VRMSpringBoneにDyanamicBoneの設定を反映、置換する
-1.Colliderフォルダ、DynamicBoneフォルダにDynamicBone、Colliderの設定ファイルがあることを確認します。<br>
+## 3.2 VRMSpringBoneにDyanamicBoneの設定を反映、置換する
+1.Colliderフォルダ、DynamicBoneフォルダにDynamicBone、Colliderの設定ファイル(.asset)を作成しておきます。<br>
+※2.1 設定をassetファイル出力する を参考にしてください。<br>
 2.HierarchyにDynamicBone、Colliderの設定を反映したいモデルを配置します<br>
 注意1）fbxファイルは一度、UniVRM-(バージョン名)→ExportHumanoidを実行してVRMファイル化してください<br>
 注意2）モデルはシーン上に1体だけおいてください。<br>
@@ -110,4 +109,3 @@
 3.メニューにて、UniVRM-(バージョン名)→ReplaceBone→DynamicBoneToSpringBoneを選択します<br>
 4.Applyボタンを押します<br>
 5.モデル上のsecondaryにVRMSpringBone、各ボーンにVRMSpringBoneColliderが反映されていればOKです。<br>
-
