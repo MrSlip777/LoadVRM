@@ -9,7 +9,7 @@
 
 ## 0.1 導入
 1．Unityを起動する<br>
-2．ReplaceVRMSpringBoneToDynamicBone.unitypackageをダブルクリックして実行する<br>
+2．ReflectBoneSetting.unitypackageをダブルクリックして実行する<br>
 3．Unity上でインポートウインドウが表示されるのでインポートを押下する<br>
 
 ## 0.2 メニュー一覧
