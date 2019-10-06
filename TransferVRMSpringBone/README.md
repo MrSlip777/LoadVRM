@@ -1,3 +1,8 @@
+# ReflectBoneSetting.unitypackage
+## 概要
+VRMSpringBone,DynamicBone設定のファイル出力と、設定ファイルを読みこんでVRMファイル形式の3Dモデルに<br>
+反映する機能をUnityエディタに追加します（エディタ拡張）<br>
+
 # 0 準備
 本スクリプトはUnity上で動作します。<br>
 また、UniVRM,DynamicBoneが必要となるのでインポートしてください。<br>
