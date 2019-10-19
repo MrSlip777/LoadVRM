@@ -41,7 +41,7 @@ VRMSpringBone,DynamicBone設定のファイル出力と、設定ファイルを�
 例）VRoidStudioで作成し、Blenderで編集前のVRMファイル<br>
 注意）モデルはシーン上に1体だけおいてください。<br>
 2.メニューにて、UniVRM-(バージョン名)→VRMSpringBone→ExportSettingを選択します<br>
-3.シーンからTargetModelへ手順1のモデルをドラッグします（モデルを設定する）
+3.シーンからTargetModelへ手順1のモデルをドラッグします（モデルを設定する）<br>
 4.exportボタンを押します<br>
 5.Colliderフォルダ、SpringBoneフォルダに設定値が出力された.assetファイルが作成されていればOKです。<br>
 
@@ -51,7 +51,7 @@ VRMSpringBone,DynamicBone設定のファイル出力と、設定ファイルを�
 注意1）fbxファイルは一度、UniVRM-(バージョン名)→ExportHumanoidを実行してVRMファイル化してください。<br>
 
 3.メニューにて、UniVRM-(バージョン名)→VRMSpringBone→ApplySettingを選択します。<br>
-4.シーンからTargetModelへ手順1のモデルをドラッグします（モデルを設定する）
+4.シーンからTargetModelへ手順1のモデルをドラッグします（モデルを設定する）<br>
 5.Applyボタンを押します。<br>
 6.モデル上にVRMSpringBone、各ボーンにVRMSpringBoneColliderが反映されていればOKです。<br>
 
@@ -59,7 +59,7 @@ VRMSpringBone,DynamicBone設定のファイル出力と、設定ファイルを�
 1.HierarchyにVRMSpringBone、Colliderの設定を削除するモデルを配置します<br>
 注意1）モデルはシーン上に1体だけおいてください。<br>
 2.メニューにて、UniVRM-(バージョン名)→VRMSpringBone→Removeを選択します。<br>
-3.シーンからTargetModelへ手順1のモデルをドラッグします（モデルを設定する）
+3.シーンからTargetModelへ手順1のモデルをドラッグします（モデルを設定する）<br>
 4.Removeボタンを押します。<br>
 
 # 2 DynamicBone設定のファイル出力と設定反映
@@ -67,7 +67,7 @@ VRMSpringBone,DynamicBone設定のファイル出力と、設定ファイルを�
 ## 2.1 設定をassetファイル出力する
 1.HierarchyにDynamicBone、Colliderの設定を出力したいモデルを配置します<br>
 2.メニューにて、UniVRM-(バージョン名)→DynamicBone→ExportSettingを選択します<br>
-3.シーンからTargetModelへ手順1のモデルをドラッグします（モデルを設定する）
+3.シーンからTargetModelへ手順1のモデルをドラッグします（モデルを設定する）<br>
 4.exportボタンを押します<br>
 5.Colliderフォルダ、DynamicBoneフォルダに設定値が出力された.assetファイルが作成されていればOKです。<br>
 
@@ -77,14 +77,14 @@ VRMSpringBone,DynamicBone設定のファイル出力と、設定ファイルを�
 注意1）fbxファイルは一度、UniVRM-(バージョン名)→ExportHumanoidを実行してVRMファイル化してください。<br>
 
 3.メニューにて、UniVRM-(バージョン名)→DynamicBone→ApplySettingを選択します。<br>
-4.シーンからTargetModelへ手順1のモデルをドラッグします（モデルを設定する）
+4.シーンからTargetModelへ手順1のモデルをドラッグします（モデルを設定する）<br>
 5.Applyボタンを押します。<br>
 6.モデル上にVRMSpringBone、各ボーンにVRMSpringBoneColliderが反映されていればOKです。<br>
 
 ## 2.3 モデルに付けられているボーンとコライダーを削除する
 1.HierarchyにDynamicBone、Colliderの設定を削除するモデルを配置します<br>
 2.メニューにて、UniVRM-(バージョン名)→DynamicBone→Removeを選択します。<br>
-3.シーンからTargetModelへ手順1のモデルをドラッグします（モデルを設定する）
+3.シーンからTargetModelへ手順1のモデルをドラッグします（モデルを設定する）<br>
 4.Removeボタンを押します。<br>
 
 # 3 VRMSpringBone,DynamicBoneの置換
@@ -108,6 +108,6 @@ VRMSpringBone,DynamicBone設定のファイル出力と、設定ファイルを�
 注意1）fbxファイルは一度、UniVRM-(バージョン名)→ExportHumanoidを実行してVRMファイル化してください<br>
 
 3.メニューにて、UniVRM-(バージョン名)→ReplaceBone→DynamicBoneToSpringBoneを選択します<br>
-4.シーンからTargetModelへ手順1のモデルをドラッグします（モデルを設定する）
+4.シーンからTargetModelへ手順1のモデルをドラッグします（モデルを設定する）<br>
 5.Applyボタンを押します<br>
 6.モデル上にVRMSpringBone、各ボーンにVRMSpringBoneColliderが反映されていればOKです。<br>
