@@ -24,14 +24,9 @@ namespace VRM
 {
     public class ExportDynamicBoneSetting : ScriptableWizard
     {
-        //対象になるモデル
-        public GameObject targetModel;
-
-        private List<string> ColliderTergetName = new List<string>();
-        static private Object[] colliderObjects;
-
-        private static GameObject m_Wizard;
-        static private ReflectSettingUtility m_Utility;
+        static public Object[] objects;
+        public List<string> ColliderTergetName = new List<string>();
+        static public Object[] colliderObjects;
 
         public static void CreateWizard()
         {
@@ -39,8 +34,7 @@ namespace VRM
             var wiz = ScriptableWizard.DisplayWizard<ExportDynamicBoneSetting>(
                 "ExportDynamicBoneSetting", "export");
             var go = Selection.activeObject as GameObject;
-            m_Wizard = new GameObject();
-            m_Utility = m_Wizard.AddComponent<ReflectSettingUtility>();
+
         }
 
         void OnWizardCreate()
@@ -52,19 +46,17 @@ namespace VRM
         }
 
         void ExportDynamicBone(){
-            
-            DynamicBone[]　bones = targetModel.GetComponentsInChildren<DynamicBone>();
+            //モデル上でsecondaryの部分を探す
+            GameObject targetObject = GameObject.Find("secondary");
+            objects = targetObject.GetComponents<DynamicBone>();
 
             //gizmo以外はエクスポート　
             //transformは名前をエクスポートする(インポート時にFindで探す)
-            for(int j = 0; j < bones.Length; j++){
-                DynamicBone dynamicbone = bones[j];
+            for(int j = 0; j < objects.Length; j++){
+                DynamicBone dynamicbone = (DynamicBone)objects[j];
 
                 DynamicBoneSetting exportData
                 = ScriptableObject.CreateInstance<DynamicBoneSetting>();
-
-                //フルパスを取得する
-                exportData.m_AttachObject = m_Utility.GetHierarchyPath(dynamicbone.gameObject.transform);
 
                 if(dynamicbone.m_Root != null){
                     exportData.m_Root = dynamicbone.m_Root.name;
@@ -89,16 +81,15 @@ namespace VRM
 
                 exportData.m_Colliders = new List<string>();
                 foreach(DynamicBoneCollider collider in dynamicbone.m_Colliders){
-                    string colliderName = m_Utility.GetHierarchyPath(collider.gameObject.transform);
-                    exportData.m_Colliders.Add(colliderName);
+                    exportData.m_Colliders.Add(collider.name);
 
                     //コライダーのついているオブジェクトの名前を登録する（重複なし、なければ追加）
                     if(ColliderTergetName.Count == 0){
-                        ColliderTergetName.Add(colliderName);
+                        ColliderTergetName.Add(collider.name);
                     }
                     else{
-                        if(ColliderTergetName.IndexOf(colliderName) == -1){
-                            ColliderTergetName.Add(colliderName);
+                        if(ColliderTergetName.IndexOf(collider.name) == -1){
+                            ColliderTergetName.Add(collider.name);
                         };
                     }
                 }
@@ -107,7 +98,7 @@ namespace VRM
                 if(dynamicbone.m_Exclusions != null){
                     
                     foreach(Transform exclusion in dynamicbone.m_Exclusions){
-                        exportData.m_Exclusions.Add(m_Utility.GetHierarchyPath(exclusion));
+                        exportData.m_Exclusions.Add(exclusion.name);
                     }
                 }
 
@@ -115,8 +106,7 @@ namespace VRM
                 exportData.m_DistantDisable = dynamicbone.m_DistantDisable;
 
                 if(dynamicbone.m_ReferenceObject != null){
-                    exportData.m_ReferenceObject
-                     = m_Utility.GetHierarchyPath(dynamicbone.m_ReferenceObject.transform);
+                    exportData.m_ReferenceObject = dynamicbone.m_ReferenceObject.name;
                 }
 
                 exportData.m_DistanceToObject = dynamicbone.m_DistanceToObject;
@@ -133,7 +123,7 @@ namespace VRM
                 DynamicBoneCollider[] colliders = colliderObject.GetComponents<DynamicBoneCollider>();
                 DynamicBoneColliderSetting exportData
                 = ScriptableObject.CreateInstance<DynamicBoneColliderSetting>();
-                exportData.TargetName = m_Utility.GetHierarchyPath(colliderObject.transform);
+                exportData.TargetName = colliderObject.name;
 
                 exportData.Colliders = new DynamicBoneColliderSetting.SphereCollider[colliders.Length];
                 for(int i= 0; i<colliders.Length; i++){
@@ -154,10 +144,6 @@ namespace VRM
         {
 
         }
-
-        void OnDestroy(){
-            DestroyImmediate(m_Wizard);
-        }        
     }
 
     public static class ExportMenuforDynamicBone

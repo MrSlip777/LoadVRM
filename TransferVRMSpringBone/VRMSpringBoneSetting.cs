@@ -8,10 +8,6 @@ using VRM;
 [CreateAssetMenu( menuName = "VRM/VRMSpringBoneSetting", fileName = "VRMSpringBoneSetting" )]
 public class VRMSpringBoneSetting: ScriptableObject
 {
-    //付けられているオブジェクト名
-    [SerializeField]
-    public string m_AttachObject;
-
     [SerializeField]
     public string m_comment;
 

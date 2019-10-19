@@ -22,59 +22,68 @@ using System.IO;
 
 namespace VRM
 {
-    public class RemoveVRMSpringBoneWizard : ScriptableWizard
+    public class RemoveVRMSpringBone : ScriptableWizard
     {
-        //対象になるモデル
-        public GameObject targetModel;
-
         static Object[] objects;
         List<string> ColliderTergetName = new List<string>();
 
-        private static GameObject m_Wizard;
-        private static RemoveVRMSpringBone m_RemoveVRMSpringBone = null;
-
         public static void CreateWizard()
         {
-            var wiz = ScriptableWizard.DisplayWizard<RemoveVRMSpringBoneWizard>("RemoveVRMSpringBoneSetting", "remove");
+            var wiz = ScriptableWizard.DisplayWizard<RemoveVRMSpringBone>(
+                "RemoveVRMSpringBoneSetting", "remove");
             var go = Selection.activeObject as GameObject;
-
-            m_Wizard = new GameObject();
-            m_RemoveVRMSpringBone = m_Wizard.AddComponent<RemoveVRMSpringBone>();
-
         }
 
         void OnWizardCreate()
         {
-            //ボーンとコライダーを削除する
-            m_RemoveVRMSpringBone.Remove(targetModel);
+            //削除対象を探す
+            SearchTarget();
+            //スプリングボーンとコライダーを削除する
+            Remove();
         }
 
+        void SearchTarget(){
+            //モデル上でsecondaryの部分を探す
+            GameObject targetObject = GameObject.Find("secondary");
+            objects = targetObject.GetComponents<VRMSpringBone>();
+
+            //ボーンに紐付けられているコライダーをピックアップする
+            for(int j = 0; j < objects.Length; j++){
+                VRMSpringBone springbone = (VRMSpringBone)objects[j];
+
+                VRMSpringBoneSetting exportData
+                = ScriptableObject.CreateInstance<VRMSpringBoneSetting>();
+
+                exportData.ColliderGroups = new string[springbone.ColliderGroups.Length];
+                for(int i = 0; i<springbone.ColliderGroups.Length; i++){
+                    exportData.ColliderGroups[i] = springbone.ColliderGroups[i].name;
+                    if(ColliderTergetName.Count == 0){
+                        ColliderTergetName.Add(exportData.ColliderGroups[i]);
+                    }
+                    else{
+                        if(ColliderTergetName.IndexOf(exportData.ColliderGroups[i]) == -1){
+                            ColliderTergetName.Add(exportData.ColliderGroups[i]);
+                        };
+                    }
+                }
+            }
+        }
+
+        void Remove(){
+            for(int j = 0; j<ColliderTergetName.Count; j++){
+                GameObject colliderObject = GameObject.Find(ColliderTergetName[j]);
+                GameObject.DestroyImmediate(colliderObject.GetComponent<VRMSpringBoneColliderGroup>());
+            }
+
+            //モデル上でsecondaryの部分を探す
+            for(int j = 0; j < objects.Length; j++){
+                GameObject.DestroyImmediate(objects[j]);
+            }
+
+        }
         void OnWizardUpdate(){
             helpString = "設定をExportしてから削除することを推奨します。 It is recommended to export the settings before deleting them.";
  
-        }
-
-        void OnDestroy(){
-            DestroyImmediate(m_Wizard);
-        }         
-    }
-
-    public class RemoveVRMSpringBone : MonoBehaviour
-    {
-        public void Remove(GameObject model){
-            //モデル上のボーンを探す
-            VRMSpringBone[] bones = model.GetComponentsInChildren<VRMSpringBone>();
-
-            foreach(VRMSpringBone bone in bones){
-                DestroyImmediate(bone);
-            }
-
-            VRMSpringBoneColliderGroup[] colliders = model.GetComponentsInChildren<VRMSpringBoneColliderGroup>();
-
-            foreach(VRMSpringBoneColliderGroup collider in colliders){
-                DestroyImmediate(collider);
-            }
-
         }
     }
 
@@ -85,7 +94,7 @@ namespace VRM
         [MenuItem(ADD_OPTIONOBJECT_KEY)]
         private static void RemoveSettingMenu()
         {
-            RemoveVRMSpringBoneWizard.CreateWizard();
+            RemoveVRMSpringBone.CreateWizard();
         }
     }
 }

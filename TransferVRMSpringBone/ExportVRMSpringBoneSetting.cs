@@ -24,13 +24,9 @@ namespace VRM
 {
     public class ExportVRMSpringBoneSetting : ScriptableWizard
     {
-        //対象になるモデル
-        public GameObject targetModel;
-
-        private List<string> ColliderTergetName = new List<string>();
-
-        private static GameObject m_Wizard;
-        static private ReflectSettingUtility m_Utility;
+        static public Object[] objects;
+        public List<string> ColliderTergetName = new List<string>();
+        static public Object[] colliderObjects;
 
         public static void CreateWizard()
         {
@@ -38,8 +34,7 @@ namespace VRM
             var wiz = ScriptableWizard.DisplayWizard<ExportVRMSpringBoneSetting>(
                 "ExportVRMSpringBoneSetting", "export");
             var go = Selection.activeObject as GameObject;
-            m_Wizard = new GameObject();
-            m_Utility = m_Wizard.AddComponent<ReflectSettingUtility>();
+
         }
 
         void OnWizardCreate()
@@ -51,8 +46,9 @@ namespace VRM
         }
 
         void ExportVRMSpringBone(){
-
-            Object[] objects = targetModel.GetComponentsInChildren<VRMSpringBone>();
+            //モデル上でsecondaryの部分を探す
+            GameObject targetObject = GameObject.Find("secondary");
+            objects = targetObject.GetComponents<VRMSpringBone>();
 
             //gizmo以外はエクスポート　
             //transformは名前をエクスポートする(インポート時にFindで探す)
@@ -62,28 +58,22 @@ namespace VRM
                 VRMSpringBoneSetting exportData
                 = ScriptableObject.CreateInstance<VRMSpringBoneSetting>();
 
-                exportData.m_AttachObject = m_Utility.GetHierarchyPath(springbone.gameObject.transform);
-
                 exportData.m_comment = springbone.m_comment;
                 exportData.m_stiffnessForce = springbone.m_stiffnessForce;
                 exportData.m_gravityPower = springbone.m_gravityPower;
                 exportData.m_gravityDir = springbone.m_gravityDir;
                 exportData.m_dragForce = springbone.m_dragForce;
                 if(springbone.m_center != null){
-                    exportData.m_center = m_Utility.GetHierarchyPath(springbone.m_center.transform);
+                    exportData.m_center = springbone.m_center.name;
                 }
                 exportData.RootBones = new string[springbone.RootBones.Count];
                 for(int i = 0; i<springbone.RootBones.Count; i++){
-                    exportData.RootBones[i] = m_Utility.GetHierarchyPath(springbone.RootBones[i].transform);
+                    exportData.RootBones[i] = springbone.RootBones[i].name;
                 }
                 exportData.m_hitRadius = springbone.m_hitRadius;
-
                 exportData.ColliderGroups = new string[springbone.ColliderGroups.Length];
                 for(int i = 0; i<springbone.ColliderGroups.Length; i++){
-                
-                    exportData.ColliderGroups[i]
-                    = m_Utility.GetHierarchyPath(springbone.ColliderGroups[i].transform);
-
+                    exportData.ColliderGroups[i] = springbone.ColliderGroups[i].name;
                     if(ColliderTergetName.Count == 0){
                         ColliderTergetName.Add(exportData.ColliderGroups[i]);
                     }
@@ -106,7 +96,7 @@ namespace VRM
                 VRMSpringBoneColliderGroup collider = colliderObject.GetComponent<VRMSpringBoneColliderGroup>();
                 VRMSpringBoneColliderSetting exportData
                 = ScriptableObject.CreateInstance<VRMSpringBoneColliderSetting>();
-                exportData.TargetName = m_Utility.GetHierarchyPath(colliderObject.transform);
+                exportData.TargetName = colliderObject.name;
                 exportData.Colliders = new VRMSpringBoneColliderSetting.SphereCollider[collider.Colliders.Length];
                 for(int i = 0; i<collider.Colliders.Length; i++){
                     exportData.Colliders[i] = new VRMSpringBoneColliderSetting.SphereCollider();
@@ -122,10 +112,6 @@ namespace VRM
         void OnWizardUpdate()
         {
 
-        }
-
-        void OnDestroy(){
-            DestroyImmediate(m_Wizard);
         }
     }
 

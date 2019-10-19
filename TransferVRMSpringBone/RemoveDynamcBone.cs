@@ -22,59 +22,76 @@ using System.IO;
 
 namespace VRM
 {
-    public class RemoveDynamicBoneWizard : ScriptableWizard
+    public class RemoveDynamicBone : ScriptableWizard
     {
-        //対象になるモデル
-        public GameObject targetModel;
-
         static Object[] objects;
         List<string> ColliderTergetName = new List<string>();
 
-        private static GameObject m_Wizard;
-        static RemoveDynamicBone m_RemoveDynamicBone;
-
         public static void CreateWizard()
         {
-            var wiz = ScriptableWizard.DisplayWizard<RemoveDynamicBoneWizard>(
+            var wiz = ScriptableWizard.DisplayWizard<RemoveDynamicBone>(
                 "RemoveDynamicBoneSetting", "remove");
             var go = Selection.activeObject as GameObject;
-            m_Wizard = new GameObject();
-            m_RemoveDynamicBone = m_Wizard.AddComponent<RemoveDynamicBone>();
         }
 
         void OnWizardCreate()
         {
-            //ボーンとコライダーを削除する
-            m_RemoveDynamicBone.Remove(targetModel);
+            //削除対象を探す
+            SearchTarget();
+            //スプリングボーンとコライダーを削除する
+            Remove();
         }
 
+        void SearchTarget(){
+            //モデル上でsecondaryの部分を探す
+            GameObject targetObject = GameObject.Find("secondary");
+            objects = targetObject.GetComponents<DynamicBone>();
+
+            //ボーンに紐付けられているコライダーをピックアップする
+            for(int j = 0; j < objects.Length; j++){
+                DynamicBone dynamicbone = (DynamicBone)objects[j];
+
+                DynamicBoneSetting exportData
+                = ScriptableObject.CreateInstance<DynamicBoneSetting>();
+                
+                exportData.m_Colliders = new List<string>();
+                foreach(DynamicBoneCollider collider in dynamicbone.m_Colliders){
+                    exportData.m_Colliders.Add(collider.name);
+
+                    //コライダーのついているオブジェクトの名前を登録する（重複なし、なければ追加）
+                    if(ColliderTergetName.Count == 0){
+                        ColliderTergetName.Add(collider.name);
+                    }
+                    else{
+                        if(ColliderTergetName.IndexOf(collider.name) == -1){
+                            ColliderTergetName.Add(collider.name);
+                        };
+                    }
+                }
+            }
+        }
+
+        void Remove(){
+            for(int j = 0; j<ColliderTergetName.Count; j++){
+                GameObject targetObject = GameObject.Find(ColliderTergetName[j]);
+                //ダイナミックボーンコライダーを削除
+                DynamicBoneCollider[] DynamicBoneComponents = targetObject.GetComponents<DynamicBoneCollider>();
+                foreach(DynamicBoneCollider removeComponent in DynamicBoneComponents){
+                    DestroyImmediate(removeComponent);
+                }
+            }
+
+            //モデル上でsecondaryの部分を探す
+            for(int j = 0; j < objects.Length; j++){
+                GameObject.DestroyImmediate(objects[j]);
+            }
+
+        }
         void OnWizardUpdate(){
             helpString = "設定をExportしてから削除することを推奨します。 It is recommended to export the settings before deleting them.";
 
         }
-
-        void OnDestroy(){
-            DestroyImmediate(m_Wizard);
-        }        
     }
-
-    public class RemoveDynamicBone : MonoBehaviour
-    {
-        public void Remove(GameObject model){
-            //モデル上のボーンを探す
-            DynamicBone[] bones = model.GetComponentsInChildren<DynamicBone>();
-
-            foreach(DynamicBone bone in bones){
-                DestroyImmediate(bone);
-            }
-
-            DynamicBoneCollider[] colliders = model.GetComponentsInChildren<DynamicBoneCollider>();
-
-            foreach(DynamicBoneCollider collider in colliders){
-                DestroyImmediate(collider);
-            }
-        }
-    } 
 
     public static class RemoveMenuforDynamicBone
     {
@@ -83,7 +100,7 @@ namespace VRM
         [MenuItem(ADD_OPTIONOBJECT_KEY)]
         private static void RemoveSettingMenu()
         {
-            RemoveDynamicBoneWizard.CreateWizard();
+            RemoveDynamicBone.CreateWizard();
         }
     }
 }
