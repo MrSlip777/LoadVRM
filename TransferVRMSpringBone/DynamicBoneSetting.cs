@@ -7,6 +7,10 @@ using UniGLTF;
 [CreateAssetMenu( menuName = "VRM/DynamicBoneSetting", fileName = "DynamicBoneSetting" )]
 public class DynamicBoneSetting: ScriptableObject
 {
+    //付けられているオブジェクト名
+    [SerializeField]
+    public string m_AttachObject;
+
     [SerializeField]
     public string m_Root;
 

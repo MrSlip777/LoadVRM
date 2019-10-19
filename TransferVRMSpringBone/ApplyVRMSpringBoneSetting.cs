@@ -25,11 +25,17 @@ namespace VRM
 {
     public class ApplyVRMSpringBoneSetting : ScriptableWizard
     {
+        //対象になるモデル
+        public GameObject targetModel;
+
         static public Object[] boneObjects;
-        public List<string> ColliderTergetName = new List<string>();
+        private List<string> ColliderTergetName = new List<string>();
         static public Object[] colliderObjects;
         public string[] BoneSettingName = null;
         public string[] ColliderSettingName = null;
+
+        private static GameObject m_Wizard;
+        private static RemoveVRMSpringBone m_RemoveVRMSpringBone;
         
         public static void CreateWizard()
         {
@@ -38,28 +44,25 @@ namespace VRM
 
             var wiz = ScriptableWizard.DisplayWizard<ApplyVRMSpringBoneSetting>(
                 "ApplyVRMSpringBoneSetting", "Apply");
-            var go = Selection.activeObject as GameObject;
+            GameObject go = Selection.activeObject as GameObject;
+
+            m_Wizard = new GameObject();
+            m_RemoveVRMSpringBone = m_Wizard.AddComponent<RemoveVRMSpringBone>();
 
         }
 
         void OnWizardCreate()
         {
+             //ボーンとコライダーを削除
+            m_RemoveVRMSpringBone.Remove(targetModel);
+
             //設定ファイルに基づいてSpringBoneColliderを設定する
             ApplyVRMSpringBoneCollider();
             //設定ファイルに基づいてSpringBoneを設定する
             ApplyVRMSpringBone();
-
         }
 
         void ApplyVRMSpringBone(){
-
-            //モデル上でsecondaryの部分を探す
-            GameObject targetObject = GameObject.Find("secondary");
-            //すべて削除してからスプリングボーンをつける
-            VRMSpringBone[] removeComponents = targetObject.GetComponents<VRMSpringBone>();
-            foreach(VRMSpringBone removeComponent in removeComponents){
-                DestroyImmediate(removeComponent);
-            }
 
             //gizmo以外は設定を反映
             //transformはFind後したTransformを反映)
@@ -67,6 +70,7 @@ namespace VRM
                 //設定データ
                 VRMSpringBoneSetting settingData = (VRMSpringBoneSetting)boneObjects[j];
                 //対象のボーン
+                GameObject targetObject = GameObject.Find(settingData.m_AttachObject);
                 VRMSpringBone springbone = targetObject.AddComponent<VRMSpringBone>();
                 
                 springbone.m_comment = settingData.m_comment;
@@ -99,12 +103,6 @@ namespace VRM
             for(int j = 0; j<colliderObjects.Length; j++){
                 VRMSpringBoneColliderSetting settingData = (VRMSpringBoneColliderSetting)colliderObjects[j];
                 GameObject targetObject = GameObject.Find(settingData.TargetName);
-                VRMSpringBoneColliderGroup[] removeComponents = targetObject.GetComponents<VRMSpringBoneColliderGroup>();
-                //すべて削除してからコライダーをつける
-                foreach(VRMSpringBoneColliderGroup removeComponent in removeComponents){
-                    DestroyImmediate(removeComponent);
-                }
-
                 VRMSpringBoneColliderGroup collider = targetObject.AddComponent<VRMSpringBoneColliderGroup>();
                 
                 collider.Colliders = new VRMSpringBoneColliderGroup.SphereCollider[settingData.Colliders.Length];
@@ -146,6 +144,10 @@ namespace VRM
                 }
             }
         }
+
+        void OnDestroy(){
+            DestroyImmediate(m_Wizard);
+        }         
     }
 
     public static class ApplyMenu
