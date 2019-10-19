@@ -39,7 +39,7 @@ VRMSpringBone,DynamicBone設定のファイル出力と、設定ファイルを�
 ## 1.1 設定をassetファイル出力する
 1.HierarchyにVRMSpringBone、Colliderの設定を出力したいモデルを配置します<br>
 例）VRoidStudioで作成し、Blenderで編集前のVRMファイル<br>
-注意）モデルはシーン上に1体だけおいてください。<br>
+
 2.メニューにて、UniVRM-(バージョン名)→VRMSpringBone→ExportSettingを選択します<br>
 3.シーンからTargetModelへ手順1のモデルをドラッグします（モデルを設定する）<br>
 4.exportボタンを押します<br>
@@ -57,7 +57,6 @@ VRMSpringBone,DynamicBone設定のファイル出力と、設定ファイルを�
 
 ## 1.3 モデルに付けられているボーンとコライダーを削除する
 1.HierarchyにVRMSpringBone、Colliderの設定を削除するモデルを配置します<br>
-注意1）モデルはシーン上に1体だけおいてください。<br>
 2.メニューにて、UniVRM-(バージョン名)→VRMSpringBone→Removeを選択します。<br>
 3.シーンからTargetModelへ手順1のモデルをドラッグします（モデルを設定する）<br>
 4.Removeボタンを押します。<br>
