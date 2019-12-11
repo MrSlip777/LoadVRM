@@ -32,7 +32,7 @@ namespace VRM
        
         public static void CreateWizard()
         {
-            ApplyMaterialSetting.objects = Resources.LoadAll("MaterialsSetting");
+            ApplyMaterialSetting.objects = Resources.LoadAll("MaterialData");
 
             var wiz = ScriptableWizard.DisplayWizard<ApplyMaterialSetting>(
                 "ApplyMaterialSetting", "Apply");
