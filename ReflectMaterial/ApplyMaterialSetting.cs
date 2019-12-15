@@ -26,9 +26,12 @@ namespace VRM
     {
         static public Object[] objects;
         static public MaterialSetting setting;
-        static public GameObject parentObject;
+        public GameObject parentObject;
         static public Material[] materials;
         public string[] MaterialName = null;
+
+        private static GameObject m_Wizard;
+        static private ReflectSettingUtility m_Utility;
        
         public static void CreateWizard()
         {
@@ -38,13 +41,21 @@ namespace VRM
                 "ApplyMaterialSetting", "Apply");
             var go = Selection.activeObject as GameObject;
 
+            m_Wizard = new GameObject();
+            m_Utility = m_Wizard.AddComponent<ReflectSettingUtility>();
         }
 
         void OnWizardCreate()
         {
             for(int i = 0;  i<objects.Length; i++){
                 setting = (MaterialSetting)objects[i];
-                GameObject targetObject = GameObject.Find(setting.targetName);
+                
+                //設定されたパスをターゲット対象に変更する
+                //m_Utility.ChangeRootPath
+
+                GameObject targetObject
+                 = GameObject.Find(m_Utility.ChangeRootPath(setting.targetName,parentObject.name));
+
                 materials = targetObject.GetComponent<SkinnedMeshRenderer>().sharedMaterials;
 
                 for(int j = 0;  j<materials.Length; j++){
@@ -65,11 +76,15 @@ namespace VRM
                 }
             }
         }
+
+        void OnDestroy(){
+            DestroyImmediate(m_Wizard);
+        }        
     }
 
     public static class ApplyMaterialSettingMenu
     {
-        const string ADD_OPTIONOBJECT_KEY = VRMVersion.VRM_VERSION + "/ApplyMaterialSetting";
+        const string ADD_OPTIONOBJECT_KEY = VRMVersion.VRM_VERSION + "/MaterialSetting/Apply";
 
         [MenuItem(ADD_OPTIONOBJECT_KEY)]
         private static void Menu()

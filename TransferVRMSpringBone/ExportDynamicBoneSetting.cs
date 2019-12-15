@@ -67,7 +67,7 @@ namespace VRM
                 exportData.m_AttachObject = m_Utility.GetHierarchyPath(dynamicbone.gameObject.transform);
 
                 if(dynamicbone.m_Root != null){
-                    exportData.m_Root = dynamicbone.m_Root.name;
+                    exportData.m_Root = m_Utility.GetHierarchyPath(dynamicbone.m_Root);
                 }
 
                 exportData.m_UpdateRate = dynamicbone.m_UpdateRate;

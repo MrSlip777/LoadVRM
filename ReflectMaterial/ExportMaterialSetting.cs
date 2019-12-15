@@ -79,7 +79,7 @@ namespace VRM
 
     public static class ExportMaterialSettingMenu
     {
-        const string ADD_OPTIONOBJECT_KEY = VRMVersion.VRM_VERSION + "/ExportMaterialSetting";
+        const string ADD_OPTIONOBJECT_KEY = VRMVersion.VRM_VERSION + "/MaterialSetting/Export";
 
         [MenuItem(ADD_OPTIONOBJECT_KEY)]
         private static void Menu()

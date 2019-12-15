@@ -36,6 +36,7 @@ namespace VRM
         
         private static GameObject m_Wizard;
         private static RemoveDynamicBone m_RemoveDynamicBone;
+        static private ReflectSettingUtility m_Utility;   
 
         public static void CreateWizard()
         {
@@ -48,6 +49,7 @@ namespace VRM
 
             m_Wizard = new GameObject();
             m_RemoveDynamicBone = m_Wizard.AddComponent<RemoveDynamicBone>();
+            m_Utility = m_Wizard.AddComponent<ReflectSettingUtility>();
         }
 
         void OnWizardCreate()
@@ -73,10 +75,13 @@ namespace VRM
                 GameObject findObject = null;
 
                 //対象のボーン
-                GameObject targetObject = GameObject.Find(settingData.m_AttachObject);
+                //m_Utility.ChangeRootPath 設定されたパスをターゲット対象に変更する
+                GameObject targetObject
+                 = GameObject.Find(m_Utility.ChangeRootPath(settingData.m_AttachObject,targetModel.name));
                 DynamicBone dynamicbone = targetObject.AddComponent<DynamicBone>();
 
-                findObject = GameObject.Find(settingData.m_Root);
+                findObject
+                = GameObject.Find(m_Utility.ChangeRootPath(settingData.m_Root,targetModel.name));
                 dynamicbone.m_Root = findObject.GetComponent<Transform>();
 
                 dynamicbone.m_UpdateRate = settingData.m_UpdateRate;
@@ -100,7 +105,8 @@ namespace VRM
 
                 if(settingData.m_Colliders != null){
                     foreach(string collider in settingData.m_Colliders){
-                        findObject = GameObject.Find(collider);
+                        findObject
+                         = GameObject.Find(m_Utility.ChangeRootPath(collider,targetModel.name));
                         if(findObject != null){
                             dynamicbone.m_Colliders.Add(findObject.GetComponent<DynamicBoneCollider>());
                         }
@@ -111,7 +117,8 @@ namespace VRM
                     dynamicbone.m_Exclusions = new List<Transform>();
 
                     foreach(string exclusion in settingData.m_Exclusions){
-                        findObject = GameObject.Find(exclusion);
+                        findObject
+                         = GameObject.Find(m_Utility.ChangeRootPath(exclusion,targetModel.name));
                         if(findObject != null){
                             dynamicbone.m_Exclusions.Add(findObject.GetComponent<Transform>());
                         }
@@ -122,7 +129,8 @@ namespace VRM
                 dynamicbone.m_DistantDisable = settingData.m_DistantDisable;
 
                 if(settingData.m_ReferenceObject != null){
-                    findObject = GameObject.Find(settingData.m_ReferenceObject);
+                    findObject
+                     = GameObject.Find(m_Utility.ChangeRootPath(settingData.m_ReferenceObject,targetModel.name));
                     if(findObject != null){
                         dynamicbone.m_ReferenceObject = findObject.GetComponent<Transform>();
                     }
@@ -138,8 +146,9 @@ namespace VRM
             for(int j = 0; j<colliderObjects.Length; j++){
                 DynamicBoneColliderSetting settingData = (DynamicBoneColliderSetting)colliderObjects[j];
 
-                GameObject targetObject = GameObject.Find(settingData.TargetName);
-
+                GameObject targetObject
+                 = GameObject.Find(m_Utility.ChangeRootPath(settingData.TargetName,targetModel.name));
+                    
                 for(int i = 0; i<settingData.Colliders.Length; i++){
                     DynamicBoneCollider collider = targetObject.AddComponent<DynamicBoneCollider>();
                     collider.m_Center = settingData.Colliders[i].m_Center;

@@ -37,6 +37,9 @@ namespace VRM
         private static GameObject m_Wizard;
         private static RemoveVRMSpringBone m_RemoveVRMSpringBone;
         
+        static private ReflectSettingUtility m_Utility;
+               
+
         public static void CreateWizard()
         {
             boneObjects = Resources.LoadAll("SpringBoneData/SpringBone");
@@ -48,7 +51,7 @@ namespace VRM
 
             m_Wizard = new GameObject();
             m_RemoveVRMSpringBone = m_Wizard.AddComponent<RemoveVRMSpringBone>();
-
+            m_Utility = m_Wizard.AddComponent<ReflectSettingUtility>();
         }
 
         void OnWizardCreate()
@@ -69,8 +72,12 @@ namespace VRM
             for(int j = 0; j < boneObjects.Length; j++){
                 //設定データ
                 VRMSpringBoneSetting settingData = (VRMSpringBoneSetting)boneObjects[j];
+                
                 //対象のボーン
-                GameObject targetObject = GameObject.Find(settingData.m_AttachObject);
+                //m_Utility.ChangeRootPath 設定されたパスをターゲット対象に変更する
+                GameObject targetObject
+                 = GameObject.Find(m_Utility.ChangeRootPath(settingData.m_AttachObject,targetModel.name));
+
                 VRMSpringBone springbone = targetObject.AddComponent<VRMSpringBone>();
                 
                 springbone.m_comment = settingData.m_comment;
@@ -86,13 +93,17 @@ namespace VRM
                 }
                 springbone.RootBones = new List<Transform>();
                 for(int i = 0; i<settingData.RootBones.Length; i++){
-                    GameObject findObject = GameObject.Find(settingData.RootBones[i]);
+                    GameObject findObject
+                     = GameObject.Find(m_Utility.ChangeRootPath(settingData.RootBones[i],targetModel.name));
+
                     springbone.RootBones.Add(findObject.GetComponent<Transform>());
                 }
                 springbone.m_hitRadius = settingData.m_hitRadius;
                 springbone.ColliderGroups = new VRMSpringBoneColliderGroup[settingData.ColliderGroups.Length];
                 for(int i = 0; i<settingData.ColliderGroups.Length; i++){
-                    GameObject findObject = GameObject.Find(settingData.ColliderGroups[i]);
+                    GameObject findObject
+                     = GameObject.Find(m_Utility.ChangeRootPath(settingData.ColliderGroups[i],targetModel.name));
+                     
                     springbone.ColliderGroups[i] = findObject.GetComponent<VRMSpringBoneColliderGroup>();
                 }
             }
@@ -102,7 +113,12 @@ namespace VRM
             //gizmo以外は設定を反映する
             for(int j = 0; j<colliderObjects.Length; j++){
                 VRMSpringBoneColliderSetting settingData = (VRMSpringBoneColliderSetting)colliderObjects[j];
-                GameObject targetObject = GameObject.Find(settingData.TargetName);
+
+                //対象のボーン
+                //m_Utility.ChangeRootPath 設定されたパスをターゲット対象に変更する
+                GameObject targetObject
+                 = GameObject.Find(m_Utility.ChangeRootPath(settingData.TargetName,targetModel.name));
+
                 VRMSpringBoneColliderGroup collider = targetObject.AddComponent<VRMSpringBoneColliderGroup>();
                 
                 collider.Colliders = new VRMSpringBoneColliderGroup.SphereCollider[settingData.Colliders.Length];

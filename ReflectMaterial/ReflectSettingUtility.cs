@@ -15,4 +15,10 @@ public class ReflectSettingUtility : MonoBehaviour
         }
         return path;
     }
+
+    public string ChangeRootPath(string targetPath,string modelName){
+        string[] str = targetPath.Split('/');
+        str[0] = modelName;
+        return string.Join("/",str);
+    }
 }
