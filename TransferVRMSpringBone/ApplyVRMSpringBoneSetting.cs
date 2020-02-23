@@ -13,13 +13,15 @@
  * 
  */
 
+#if UNITY_EDITOR
+
 using System.Text;
-using UnityEditor;
 using UnityEngine;
 using System.Collections.Generic;
 using System.Collections;
 using System.IO;
 using VRM;
+using UnityEditor;
 
 namespace VRM
 {
@@ -177,3 +179,5 @@ namespace VRM
         }
     }
 }
+
+#endif

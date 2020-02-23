@@ -12,6 +12,7 @@
  *  このスクリプトはもうあなたのものです。
  * 
  */
+#if UNITY_EDITOR
 
 using System.Text;
 using UnityEditor;
@@ -140,3 +141,5 @@ namespace VRM
         }
     }
 }
+
+#endif
