@@ -30,7 +30,6 @@ namespace VRM
         static public Object[] objects;
         static public MaterialSetting setting;
         static public GameObject parentObject;
-        //static public Material[] materials;
         public string[] MaterialName = null;
         private static GameObject m_Wizard;
         static private ReflectSettingUtility m_Utility;
