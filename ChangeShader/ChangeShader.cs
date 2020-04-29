@@ -1,5 +1,5 @@
 ﻿/*
- * 対象のモデルのシェーダーをArktoonにするスクリプト
+ * 対象のモデルのシェーダーを変更するスクリプト
  *
  * (C)2020 slip
  * This software is released under the MIT License.
