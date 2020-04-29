@@ -22,7 +22,7 @@ using System.IO;
 
 public class ChangeShaderMenu : EditorWindow{
     public Object targetModel;
-    static ChangeShader_Arktoon m_ChangeShader = new ChangeShader();
+    static ShaderEditor m_ChangeShader = new ShaderEditor();
 
     [MenuItem("ShaderEditor/Change")]
     private static void ApplySettingMenu()
@@ -42,17 +42,17 @@ public class ChangeShaderMenu : EditorWindow{
         EditorGUI.LabelField( new Rect(0.0f, TitlePos_Y, position.width, 20),"ArkToon" );
 
         if( GUI.Button ( new Rect( 10.0f, TitlePos_Y + UIdistance, 120.0f, 20.0f), "Opaque") ){
-			m_ChangeShader_Arktoon.ChangeShader((GameObject)targetModel,"arktoon/Opaque");
+			m_ChangeShader.ChangeShader((GameObject)targetModel,"arktoon/Opaque");
 		}
         if( GUI.Button ( new Rect( 10.0f, TitlePos_Y + UIdistance*2, 120.0f, 20.0f), "AlphaCutout") ){
-			m_ChangeShader_Arktoon.ChangeShader((GameObject)targetModel,"arktoon/AlphaCutout");
+			m_ChangeShader.ChangeShader((GameObject)targetModel,"arktoon/AlphaCutout");
 		}
         
         if( GUI.Button ( new Rect( 10.0f, TitlePos_Y + UIdistance*3, 120.0f, 20.0f), "Fade") ){
-			m_ChangeShader_Arktoon.ChangeShader((GameObject)targetModel,"arktoon/Fade");
+			m_ChangeShader.ChangeShader((GameObject)targetModel,"arktoon/Fade");
 		}
         if( GUI.Button ( new Rect( 10.0f, TitlePos_Y + UIdistance*4, 120.0f, 20.0f), "FadeRefracted") ){
-			m_ChangeShader_Arktoon.ChangeShader((GameObject)targetModel,"arktoon/FadeRefracted");
+			m_ChangeShader.ChangeShader((GameObject)targetModel,"arktoon/FadeRefracted");
 		}
 
         float Title2_Pos_Y = TitlePos_Y + UIdistance*5;
@@ -60,7 +60,7 @@ public class ChangeShaderMenu : EditorWindow{
         EditorGUI.LabelField( new Rect(0.0f, Title2_Pos_Y, position.width, 20),"MToon" );
 
         if( GUI.Button ( new Rect( 10.0f, Title2_Pos_Y + UIdistance, 120.0f, 20.0f), "MToon") ){
-			m_ChangeShader_Arktoon.ChangeShader((GameObject)targetModel,"VRM/MToon");
+			m_ChangeShader.ChangeShader((GameObject)targetModel,"VRM/MToon");
 		}
 
         float Title3_Pos_Y = Title2_Pos_Y + UIdistance*2;
@@ -68,15 +68,15 @@ public class ChangeShaderMenu : EditorWindow{
         EditorGUI.LabelField( new Rect(0.0f, Title3_Pos_Y, position.width, 20),"UTS2" );
 
         if( GUI.Button ( new Rect( 10.0f, Title3_Pos_Y + UIdistance, 120.0f, 20.0f), "Toon_DoubleShadeWithFeather") ){
-			m_ChangeShader_Arktoon.ChangeShader((GameObject)targetModel,"UnityChanToonShader/Toon_DoubleShadeWithFeather");
+			m_ChangeShader.ChangeShader((GameObject)targetModel,"UnityChanToonShader/Toon_DoubleShadeWithFeather");
 		}
         if( GUI.Button ( new Rect( 10.0f, Title3_Pos_Y + UIdistance*2, 120.0f, 20.0f), "ToonColor_DoubleShadeWithFeather_Clipping_StencilMask") ){
-			m_ChangeShader_Arktoon.ChangeShader((GameObject)targetModel,"UnityChanToonShader/NoOutline/ToonColor_DoubleShadeWithFeather_Clipping_StencilMask");
+			m_ChangeShader.ChangeShader((GameObject)targetModel,"UnityChanToonShader/NoOutline/ToonColor_DoubleShadeWithFeather_Clipping_StencilMask");
 		}
     }
 }
 
-public class ChangeShader : MonoBehaviour {
+public class ShaderEditor : MonoBehaviour {
 
     public void ChangeShader(GameObject targetModel,string shaderName)
     {
