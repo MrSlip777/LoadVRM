@@ -9,6 +9,7 @@ MToonシェーダー → UTS2シェーダーへ置換するUnityエディタ拡�
 [動作確認済みの環境]<br>
 ・Unity 2019 4.0f1<br>
 ・UniVRM 0.56.3<br>
+・Universal Toon Shader for URP 2.2.0 (UTS2)<br>
 
 ## 0.1 導入
 1．Unityを起動する<br>
