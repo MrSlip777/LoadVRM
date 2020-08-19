@@ -53,76 +53,32 @@ namespace VRM
             //変更後のシェーダーを設定
             Shader changeShader = Shader.Find(ShaderName_UTS2);
 
-            for(int j = 0; j<skinnedMeshRenderers.Length; j++){
+            foreach(SkinnedMeshRenderer skinnedMeshRenderer in skinnedMeshRenderers){
 
-                Material[] materials = skinnedMeshRenderers[j].sharedMaterials;
+                Material[] materials = skinnedMeshRenderer.sharedMaterials;
 
                 for(int i = 0; i<materials.Length; i++){
                     Material material = materials[i];
-                    
-                    Texture input_Tex = material.mainTexture;
-                    string shaderFolderName = null;
 
                     if(material.shader.name == ShaderName_MToon){
+
+                        Texture input_Tex = material.mainTexture;
+
                         //フォルダ作成
                         MakeFolder();
 
-                        //バックアップ用のMaterial
-                        shaderFolderName = ShaderName_MToon.Replace('/', '_');
-                        
-                        Material matMToon = new Material(Shader.Find(ShaderName_MToon));
-
-                        matMToon.CopyPropertiesFromMaterial(material);
-
-                        AssetDatabase.CreateAsset(matMToon, OutputFolderName + "/" + targetModel.name + "/"
-                        + MaterialFolderName + "/"
-                        + shaderFolderName + "/" + material.name + ".mat");
-
-                        Texture mainTex = material.GetTexture("_MainTex");
-                        Texture ShadeMap_1st = material.GetTexture("_ShadeTexture");
-                        Texture normalMap = material.GetTexture("_BumpMap");
-
-                        Texture matCap = material.GetTexture("_SphereAdd");
-                        Texture emissionMap = material.GetTexture("_EmissionMap");
-                        
-                        Color mainColor = material.GetColor("_Color");
-                        Color shadeColor = material.GetColor("_ShadeColor");
-
-                        Color emissionColor = material.GetColor("_EmissionColor");
-                        float outlineWidth = material.GetFloat("_OutlineWidth");
-                        Color outlineColor = material.GetColor("_OutlineColor");
+                        //MToonのMaterial書き出し(バックアップ用)
+                        SaveMaterial(material,ShaderName_MToon);
 
                         //UTS2用にマスクテクスチャを作成
                         MakeMaskTexture(input_Tex);
 
-                        material.shader = changeShader;
-                        material.SetFloat("_ClippingMode",1.0f);
-                        material.SetTexture("_BaseMap",mainTex);
-                        material.SetTexture("_1st_ShadeMap",ShadeMap_1st);
-                        material.SetTexture("_NormalMap",normalMap);
-                        material.SetColor("_BaseColor",mainColor);
-                        material.SetColor("_1st_ShadeColor",shadeColor);
+                        //マテリアルの設定反映
+                        SettingProperty_FromMtoonToUTS2(ref material,input_Tex,changeShader);
 
-                        Texture maskTexture = Resources.Load(targetModel.name + "/" + TextureFolderName 
-                        +  "/" + input_Tex.name + "_clipping") as Texture;
-                        material.SetTexture("_ClippingMask",maskTexture);
-                        material.SetFloat("_Inverse_Clipping",1.0f);
+                        //UTS2のMaterial書き出し
+                        SaveMaterial(material,ShaderName_UTS2);
 
-                        material.SetTexture("_MatCap_Sampler",matCap);
-                        material.SetTexture("_Emissive_Tex",emissionMap);
-                        material.SetColor("_Emissive_Color",emissionColor);
-                        material.SetFloat("_Outline_Width",outlineWidth);
-                        material.SetColor("_Outline_Color",outlineColor);
-
-                        Material matUTS2 = new Material(Shader.Find(ShaderName_UTS2));
-
-                        matUTS2.CopyPropertiesFromMaterial(material);
-
-                        shaderFolderName = ShaderName_UTS2.Replace('/', '_');
-
-                        AssetDatabase.CreateAsset(matUTS2, OutputFolderName + "/" + targetModel.name + "/" 
-                        + MaterialFolderName + "/" + shaderFolderName + "/" + material.name + ".mat");
-         
                     }
                 }
             }
@@ -194,6 +150,51 @@ namespace VRM
             + input_Tex.name + "_clipping.png", texture.EncodeToPNG());
             
             AssetDatabase.Refresh();
+        }
+
+        void SettingProperty_FromMtoonToUTS2(ref Material material,Texture input_Tex,Shader changeShader){
+            Texture mainTex = material.GetTexture("_MainTex");
+            Texture ShadeMap_1st = material.GetTexture("_ShadeTexture");
+            Texture normalMap = material.GetTexture("_BumpMap");
+
+            Texture matCap = material.GetTexture("_SphereAdd");
+            Texture emissionMap = material.GetTexture("_EmissionMap");
+            
+            Color mainColor = material.GetColor("_Color");
+            Color shadeColor = material.GetColor("_ShadeColor");
+
+            Color emissionColor = material.GetColor("_EmissionColor");
+            float outlineWidth = material.GetFloat("_OutlineWidth");
+            Color outlineColor = material.GetColor("_OutlineColor");
+
+            material.shader = changeShader;
+            material.SetFloat("_ClippingMode",1.0f);
+            material.SetTexture("_BaseMap",mainTex);
+            material.SetTexture("_1st_ShadeMap",ShadeMap_1st);
+            material.SetTexture("_NormalMap",normalMap);
+            material.SetColor("_BaseColor",mainColor);
+            material.SetColor("_1st_ShadeColor",shadeColor);
+
+            Texture maskTexture = Resources.Load(targetModel.name + "/" + TextureFolderName 
+            +  "/" + input_Tex.name + "_clipping") as Texture;
+            material.SetTexture("_ClippingMask",maskTexture);
+            material.SetFloat("_Inverse_Clipping",1.0f);
+
+            material.SetTexture("_MatCap_Sampler",matCap);
+            material.SetTexture("_Emissive_Tex",emissionMap);
+            material.SetColor("_Emissive_Color",emissionColor);
+            material.SetFloat("_Outline_Width",outlineWidth);
+            material.SetColor("_Outline_Color",outlineColor);            
+        }
+
+        void SaveMaterial(Material material,string ShaderName){
+            Material outputMaterial = new Material(Shader.Find(ShaderName));
+            outputMaterial.CopyPropertiesFromMaterial(material);
+
+            string shaderFolderName = ShaderName.Replace('/', '_');
+
+            AssetDatabase.CreateAsset(outputMaterial, OutputFolderName + "/" + targetModel.name + "/" 
+            + MaterialFolderName + "/" + shaderFolderName + "/" + material.name + ".mat");
         }
     }
 
