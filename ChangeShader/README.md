@@ -4,7 +4,7 @@ MToonシェーダー → UTS2シェーダーへ置換するUnityエディタ拡�
 
 # 0 準備
 本スクリプトはUnity上で動作します。<br>
-また、UniVRM,DynamicBoneが必要となるのでインポートしてください。<br>
+また、UniVRM,UTS2が必要となるのでインポートしてください。<br>
 
 [動作確認済みの環境]<br>
 ・Unity 2019 4.0f1<br>
