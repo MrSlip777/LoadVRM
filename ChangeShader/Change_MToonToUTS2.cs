@@ -25,7 +25,6 @@ namespace VRM
     public class Change_MToonToUTS2 : ScriptableWizard
     {
         private static GameObject m_Wizard;
-        static private ReflectSettingUtility m_Utility;
 
         //対象になるモデル
         public GameObject targetModel;
@@ -43,7 +42,7 @@ namespace VRM
                 "Change_MToonToUTS2", "change");
             var go = Selection.activeObject as GameObject;
             m_Wizard = new GameObject();
-            m_Utility = m_Wizard.AddComponent<ReflectSettingUtility>();
+
         }
 
         void OnWizardCreate()
@@ -55,41 +54,20 @@ namespace VRM
             Shader changeShader = Shader.Find(ShaderName_UTS2);
 
             for(int j = 0; j<skinnedMeshRenderers.Length; j++){
-                MaterialSetting exportData
-                = ScriptableObject.CreateInstance<MaterialSetting>();
-
-                exportData.targetName
-                 = m_Utility.GetHierarchyPath(skinnedMeshRenderers[j].gameObject.transform);
 
                 Material[] materials = skinnedMeshRenderers[j].sharedMaterials;
 
-                foreach(Material material in materials){
+                for(int i = 0; i<materials.Length; i++){
+                    Material material = materials[i];
+                    
                     Texture input_Tex = material.mainTexture;
                     string shaderFolderName = null;
 
                     if(material.shader.name == ShaderName_MToon){
+                        //フォルダ作成
+                        MakeFolder();
 
-                        //フォルダがなければ作成する
-                        if (!Directory.Exists(OutputFolderName + "/" + targetModel.name + "/" + TextureFolderName)) {
-                            Directory.CreateDirectory(OutputFolderName + "/" + targetModel.name + "/" + TextureFolderName);
-                        }
-
-                        shaderFolderName = ShaderName_MToon.Replace('/', '_');
-
-                        if (!Directory.Exists(OutputFolderName + "/" + targetModel.name + "/" 
-                        + MaterialFolderName + "/" + shaderFolderName)) {
-                            Directory.CreateDirectory(OutputFolderName + "/" + targetModel.name + "/" 
-                            + MaterialFolderName + "/" + shaderFolderName);
-                        }
-
-                        shaderFolderName = ShaderName_UTS2.Replace('/', '_');
-
-                        if (!Directory.Exists(OutputFolderName + "/" + targetModel.name + "/" 
-                        + MaterialFolderName + "/" + shaderFolderName)) {
-                            Directory.CreateDirectory(OutputFolderName + "/" + targetModel.name + "/" 
-                            + MaterialFolderName + "/" + shaderFolderName);
-                        }
-
+                        //バックアップ用のMaterial
                         shaderFolderName = ShaderName_MToon.Replace('/', '_');
                         
                         Material matMToon = new Material(Shader.Find(ShaderName_MToon));
@@ -144,7 +122,7 @@ namespace VRM
 
                         AssetDatabase.CreateAsset(matUTS2, OutputFolderName + "/" + targetModel.name + "/" 
                         + MaterialFolderName + "/" + shaderFolderName + "/" + material.name + ".mat");
-
+         
                     }
                 }
             }
@@ -152,6 +130,31 @@ namespace VRM
 
         void OnDestroy(){
             DestroyImmediate(m_Wizard);
+        }
+
+        void MakeFolder(){
+            string shaderFolderName = null;
+
+            //フォルダがなければ作成する
+            if (!Directory.Exists(OutputFolderName + "/" + targetModel.name + "/" + TextureFolderName)) {
+                Directory.CreateDirectory(OutputFolderName + "/" + targetModel.name + "/" + TextureFolderName);
+            }
+
+            shaderFolderName = ShaderName_MToon.Replace('/', '_');
+
+            if (!Directory.Exists(OutputFolderName + "/" + targetModel.name + "/" 
+            + MaterialFolderName + "/" + shaderFolderName)) {
+                Directory.CreateDirectory(OutputFolderName + "/" + targetModel.name + "/" 
+                + MaterialFolderName + "/" + shaderFolderName);
+            }
+
+            shaderFolderName = ShaderName_UTS2.Replace('/', '_');
+
+            if (!Directory.Exists(OutputFolderName + "/" + targetModel.name + "/" 
+            + MaterialFolderName + "/" + shaderFolderName)) {
+                Directory.CreateDirectory(OutputFolderName + "/" + targetModel.name + "/" 
+                + MaterialFolderName + "/" + shaderFolderName);
+            }            
         }
 
         void MakeMaskTexture(Texture input_Tex){
