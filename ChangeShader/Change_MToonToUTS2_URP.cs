@@ -22,7 +22,7 @@ using System.Collections.Generic;
 
 namespace VRM
 {
-    public class Change_MToonToUTS2 : ScriptableWizard
+    public class Change_MToonToUTS2_URP : ScriptableWizard
     {
         private static GameObject m_Wizard;
 
@@ -34,12 +34,12 @@ namespace VRM
         private readonly string MaterialFolderName = "Material";
 
         private readonly string ShaderName_MToon = "VRM/MToon";
-        private readonly string ShaderName_UTS2 = "UnityChanToonShader/Toon_DoubleShadeWithFeather_Clipping";
+        private readonly string ShaderName_UTS2 = "Universal Render Pipeline/Toon";
 
         public static void CreateWizard()
         {
-            var wiz = ScriptableWizard.DisplayWizard<Change_MToonToUTS2>(
-                "Change_MToonToUTS2", "change");
+            var wiz = ScriptableWizard.DisplayWizard<Change_MToonToUTS2_URP>(
+                "Change_MToonToUTS2_URP", "change");
             var go = Selection.activeObject as GameObject;
             m_Wizard = new GameObject();
 
@@ -65,7 +65,7 @@ namespace VRM
                         Texture input_Tex = material.mainTexture;
 
                         //フォルダ作成
-                        MakeFolderForShaders();
+                        MakeFolder();
 
                         //MToonのMaterial書き出し(バックアップ用)
                         SaveMaterial(material,ShaderName_MToon);
@@ -88,40 +88,32 @@ namespace VRM
             DestroyImmediate(m_Wizard);
         }
 
-        void MakeFolderForShaders(){
+        void MakeFolder(){
             string shaderFolderName = null;
+
+            //フォルダがなければ作成する
+            if (!Directory.Exists(OutputFolderName + "/" + targetModel.name + "/" + TextureFolderName)) {
+                Directory.CreateDirectory(OutputFolderName + "/" + targetModel.name + "/" + TextureFolderName);
+            }
 
             shaderFolderName = ShaderName_MToon.Replace('/', '_');
 
-            MakeFolder_OutputFiles(shaderFolderName);
+            if (!Directory.Exists(OutputFolderName + "/" + targetModel.name + "/" 
+            + MaterialFolderName + "/" + shaderFolderName)) {
+                Directory.CreateDirectory(OutputFolderName + "/" + targetModel.name + "/" 
+                + MaterialFolderName + "/" + shaderFolderName);
+            }
 
             shaderFolderName = ShaderName_UTS2.Replace('/', '_');
 
-            MakeFolder_OutputFiles(shaderFolderName);
-
-        }
-
-        void MakeFolder_OutputFiles(string shaderFolderName){
-            string targetFolderPath = null;
-
-            targetFolderPath = OutputFolderName + "/" + targetModel.name + "/" 
-                + MaterialFolderName + "/" + shaderFolderName;
-
-            if (!Directory.Exists(targetFolderPath)) {
-                Directory.CreateDirectory(targetFolderPath);
-            }
-
-            targetFolderPath = OutputFolderName + "/" + targetModel.name + "/" 
-                + TextureFolderName + "/" + shaderFolderName;
-
-            if (!Directory.Exists(targetFolderPath)) {
-                Directory.CreateDirectory(targetFolderPath);
-            }
+            if (!Directory.Exists(OutputFolderName + "/" + targetModel.name + "/" 
+            + MaterialFolderName + "/" + shaderFolderName)) {
+                Directory.CreateDirectory(OutputFolderName + "/" + targetModel.name + "/" 
+                + MaterialFolderName + "/" + shaderFolderName);
+            }            
         }
 
         void MakeMaskTexture(Texture input_Tex){
-            string shaderFolderName = null;
-
             Texture2D texture = 
             new Texture2D(input_Tex.width, input_Tex.height, TextureFormat.RGBA32, false);
 
@@ -153,18 +145,14 @@ namespace VRM
 
             texture.SetPixels(pixels);
 
-            shaderFolderName = ShaderName_UTS2.Replace('/', '_');
-
             // pngとして保存
             System.IO.File.WriteAllBytes(OutputFolderName + "/" + targetModel.name + "/" + TextureFolderName + "/"
-            +  shaderFolderName + "/" + input_Tex.name + "_clipping.png", texture.EncodeToPNG());
+            + input_Tex.name + "_clipping.png", texture.EncodeToPNG());
             
             AssetDatabase.Refresh();
         }
 
         void SettingProperty_FromMtoonToUTS2(ref Material material,Texture input_Tex,Shader changeShader){
-            string shaderFolderName = null;
-
             Texture mainTex = material.GetTexture("_MainTex");
             Texture ShadeMap_1st = material.GetTexture("_ShadeTexture");
             Texture normalMap = material.GetTexture("_BumpMap");
@@ -180,17 +168,15 @@ namespace VRM
             Color outlineColor = material.GetColor("_OutlineColor");
 
             material.shader = changeShader;
-            //material.SetFloat("_ClippingMode",1.0f);
+            material.SetFloat("_ClippingMode",1.0f);
             material.SetTexture("_BaseMap",mainTex);
             material.SetTexture("_1st_ShadeMap",ShadeMap_1st);
             material.SetTexture("_NormalMap",normalMap);
             material.SetColor("_BaseColor",mainColor);
             material.SetColor("_1st_ShadeColor",shadeColor);
 
-            shaderFolderName = ShaderName_UTS2.Replace('/', '_');
-
             Texture maskTexture = Resources.Load(targetModel.name + "/" + TextureFolderName 
-            +  "/" + shaderFolderName + "/" + input_Tex.name + "_clipping") as Texture;
+            +  "/" + input_Tex.name + "_clipping") as Texture;
             material.SetTexture("_ClippingMask",maskTexture);
             material.SetFloat("_Inverse_Clipping",1.0f);
 
@@ -212,14 +198,14 @@ namespace VRM
         }
     }
 
-    public static class Change_MToonToUTS2_Menu
+    public static class Change_MToonToUTS2_URP_Menu
     {
-        const string ADD_OPTIONOBJECT_KEY = VRMVersion.VRM_VERSION + "/MaterialSetting/Change_MToonToUTS2";
+        const string ADD_OPTIONOBJECT_KEY = VRMVersion.VRM_VERSION + "/MaterialSetting/Change_MToonToUTS2_URP";
 
         [MenuItem(ADD_OPTIONOBJECT_KEY)]
         private static void Menu()
         {
-           Change_MToonToUTS2.CreateWizard();
+           Change_MToonToUTS2_URP.CreateWizard();
         }
     }
 }

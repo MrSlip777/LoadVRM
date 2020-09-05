@@ -1,5 +1,5 @@
 ﻿/*
- * MToonシェーダー　→　UTS2シェーダーへ置換するUnityエディタ拡張スクリプト
+ * UTS2シェーダー →　MToonシェーダーへ置換するUnityエディタ拡張スクリプト
  *
  * (C)2020 slip
  * This software is released under the MIT License.
@@ -22,7 +22,7 @@ using System.Collections.Generic;
 
 namespace VRM
 {
-    public class Change_MToonToUTS2 : ScriptableWizard
+    public class Change_UTS2ToMToon : ScriptableWizard
     {
         private static GameObject m_Wizard;
 
@@ -38,8 +38,8 @@ namespace VRM
 
         public static void CreateWizard()
         {
-            var wiz = ScriptableWizard.DisplayWizard<Change_MToonToUTS2>(
-                "Change_MToonToUTS2", "change");
+            var wiz = ScriptableWizard.DisplayWizard<Change_UTS2ToMToon>(
+                "Change_UTS2ToMToon", "change");
             var go = Selection.activeObject as GameObject;
             m_Wizard = new GameObject();
 
@@ -51,7 +51,7 @@ namespace VRM
              = targetModel.GetComponentsInChildren<SkinnedMeshRenderer>();
 
             //変更後のシェーダーを設定
-            Shader changeShader = Shader.Find(ShaderName_UTS2);
+            Shader changeShader = Shader.Find(ShaderName_MToon);
 
             foreach(SkinnedMeshRenderer skinnedMeshRenderer in skinnedMeshRenderers){
 
@@ -60,24 +60,25 @@ namespace VRM
                 for(int i = 0; i<materials.Length; i++){
                     Material material = materials[i];
 
-                    if(material.shader.name == ShaderName_MToon){
+                    if(material.shader.name == ShaderName_UTS2){
 
                         Texture input_Tex = material.mainTexture;
+                        Texture input_Mask = material.GetTexture("_ClippingMask");
 
                         //フォルダ作成
                         MakeFolderForShaders();
 
                         //MToonのMaterial書き出し(バックアップ用)
-                        SaveMaterial(material,ShaderName_MToon);
+                        SaveMaterial(material,ShaderName_UTS2);
 
                         //UTS2用にマスクテクスチャを作成
-                        MakeMaskTexture(input_Tex);
+                        MakeMaskTexture(input_Tex,input_Mask);
 
                         //マテリアルの設定反映
-                        SettingProperty_FromMtoonToUTS2(ref material,input_Tex,changeShader);
+                        SettingProperty_FromUTS2ToMToon(ref material,input_Tex,changeShader);
 
                         //UTS2のMaterial書き出し
-                        SaveMaterial(material,ShaderName_UTS2);
+                        SaveMaterial(material,ShaderName_MToon);
 
                     }
                 }
@@ -119,12 +120,7 @@ namespace VRM
             }
         }
 
-        void MakeMaskTexture(Texture input_Tex){
-            string shaderFolderName = null;
-
-            Texture2D texture = 
-            new Texture2D(input_Tex.width, input_Tex.height, TextureFormat.RGBA32, false);
-
+        void TransferTextureToTexture2D(ref Texture2D texture,Texture input_Tex){
             RenderTexture renderTexture = new RenderTexture(texture.width, texture.height, 32);
 
             // もとのテクスチャをRenderTextureにコピー
@@ -137,68 +133,86 @@ namespace VRM
         
             // 不要になったので削除
             RenderTexture.DestroyImmediate(renderTexture);
+        }
 
+        void MakeMaskTexture(Texture input_Tex,Texture input_Mask){
+            string shaderFolderName = null;
+
+            Texture2D texture = 
+            new Texture2D(input_Tex.width, input_Tex.height, TextureFormat.RGBA32, false);
+
+            TransferTextureToTexture2D(ref texture,input_Tex);
+
+            //マスクテクスチャをTexture2Dへ変換する
+            Texture2D mask = 
+            new Texture2D(input_Mask.width, input_Mask.height, TextureFormat.RGBA32, false);
+
+            TransferTextureToTexture2D(ref mask,input_Mask);
 
             Color[] pixels = texture.GetPixels();
+            Color[] pixels_mask = mask.GetPixels();
+            
 
             for (int i = 0; i < pixels.Length; i++)
             {
-                if(pixels[i].a > 0.0f){
+                if(pixels_mask[i].a > 0.0f){
                     pixels[i] = new Color(0,0,0,0);
                 }
                 else{
-                    pixels[i] = new Color(1,1,1,1);
+                    
                 }
             }
 
             texture.SetPixels(pixels);
 
-            shaderFolderName = ShaderName_UTS2.Replace('/', '_');
+            shaderFolderName = ShaderName_MToon.Replace('/', '_');
 
             // pngとして保存
             System.IO.File.WriteAllBytes(OutputFolderName + "/" + targetModel.name + "/" + TextureFolderName + "/"
-            +  shaderFolderName + "/" + input_Tex.name + "_clipping.png", texture.EncodeToPNG());
+            +  shaderFolderName + "/" + input_Tex.name + ".png", texture.EncodeToPNG());
             
             AssetDatabase.Refresh();
         }
 
-        void SettingProperty_FromMtoonToUTS2(ref Material material,Texture input_Tex,Shader changeShader){
+        void SettingProperty_FromUTS2ToMToon(ref Material material,Texture input_Tex,Shader changeShader){
             string shaderFolderName = null;
 
-            Texture mainTex = material.GetTexture("_MainTex");
-            Texture ShadeMap_1st = material.GetTexture("_ShadeTexture");
-            Texture normalMap = material.GetTexture("_BumpMap");
+            Texture normalMap = material.GetTexture("_NormalMap");
 
-            Texture matCap = material.GetTexture("_SphereAdd");
-            Texture emissionMap = material.GetTexture("_EmissionMap");
+            Texture matCap = material.GetTexture("_MatCap_Sampler");
+            Texture emissionMap = material.GetTexture("_Emissive_Tex");
             
-            Color mainColor = material.GetColor("_Color");
-            Color shadeColor = material.GetColor("_ShadeColor");
+            Color mainColor = material.GetColor("_BaseColor");
+            Color shadeColor = material.GetColor("_1st_ShadeColor");
 
-            Color emissionColor = material.GetColor("_EmissionColor");
-            float outlineWidth = material.GetFloat("_OutlineWidth");
-            Color outlineColor = material.GetColor("_OutlineColor");
+            Color emissionColor = material.GetColor("_Emissive_Color");
+            float outlineWidth = material.GetFloat("_Outline_Width");
+            Color outlineColor = material.GetColor("_Outline_Color");
 
             material.shader = changeShader;
-            //material.SetFloat("_ClippingMode",1.0f);
-            material.SetTexture("_BaseMap",mainTex);
-            material.SetTexture("_1st_ShadeMap",ShadeMap_1st);
-            material.SetTexture("_NormalMap",normalMap);
-            material.SetColor("_BaseColor",mainColor);
-            material.SetColor("_1st_ShadeColor",shadeColor);
+
+            shaderFolderName = ShaderName_MToon.Replace('/', '_');
+
+            //テクスチャはマスク箇所を加味して作成したテクスチャを使用する
+            Texture mainTex = Resources.Load(targetModel.name + "/" + TextureFolderName +  "/"
+            + shaderFolderName + "/" + input_Tex.name ) as Texture;
+            material.SetTexture("_MainTex",mainTex);
+
+            Texture ShadeTex = Resources.Load(targetModel.name + "/" + TextureFolderName +  "/" 
+            + shaderFolderName + "/" + input_Tex.name ) as Texture;
+            material.SetTexture("_ShadeTexture",ShadeTex);
+
+            material.SetTexture("_BumpMap",normalMap);
+            material.SetColor("_Color",mainColor);
+            material.SetColor("_ShadeColor",shadeColor);
 
             shaderFolderName = ShaderName_UTS2.Replace('/', '_');
 
-            Texture maskTexture = Resources.Load(targetModel.name + "/" + TextureFolderName 
-            +  "/" + shaderFolderName + "/" + input_Tex.name + "_clipping") as Texture;
-            material.SetTexture("_ClippingMask",maskTexture);
-            material.SetFloat("_Inverse_Clipping",1.0f);
-
-            material.SetTexture("_MatCap_Sampler",matCap);
-            material.SetTexture("_Emissive_Tex",emissionMap);
-            material.SetColor("_Emissive_Color",emissionColor);
-            material.SetFloat("_Outline_Width",outlineWidth);
-            material.SetColor("_Outline_Color",outlineColor);            
+            material.SetTexture("_SphereAdd",matCap);
+            material.SetTexture("_EmissionMap",emissionMap);
+            material.SetColor("_EmissionColor",emissionColor);
+            material.SetFloat("_OutlineWidth",outlineWidth);
+            material.SetColor("_OutlineColor",outlineColor);            
         }
 
         void SaveMaterial(Material material,string ShaderName){
@@ -212,14 +226,14 @@ namespace VRM
         }
     }
 
-    public static class Change_MToonToUTS2_Menu
+    public static class Change_UTS2ToMToon_Menu
     {
-        const string ADD_OPTIONOBJECT_KEY = VRMVersion.VRM_VERSION + "/MaterialSetting/Change_MToonToUTS2";
+        const string ADD_OPTIONOBJECT_KEY = VRMVersion.VRM_VERSION + "/MaterialSetting/Change_UTS2ToMToon";
 
         [MenuItem(ADD_OPTIONOBJECT_KEY)]
         private static void Menu()
         {
-           Change_MToonToUTS2.CreateWizard();
+           Change_UTS2ToMToon.CreateWizard();
         }
     }
 }
