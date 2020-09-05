@@ -1,4 +1,4 @@
-# Change_MToonToUTS2.unitypackage
+# ChangeShader_MToonToUTS2_URP
 ## 概要
 MToonシェーダー → UTS2シェーダーへ置換するUnityエディタ拡張スクリプト<br>
 
