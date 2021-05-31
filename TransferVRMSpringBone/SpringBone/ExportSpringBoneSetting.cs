@@ -28,6 +28,8 @@ namespace VRM
         //対象になるモデル
         public GameObject targetModel;
 
+        private readonly string OutputFolderName = "Assets/Models/Resources";
+
         private List<string> ColliderTergetName = new List<string>();
 
         private static GameObject m_Wizard;
@@ -45,6 +47,9 @@ namespace VRM
 
         void OnWizardCreate()
         {
+            //存在しない場合、フォルダを作成する
+            MakeFolder_OperatingFolders();
+
             //SpringBoneの設定値をScriptableObjectとして保存する
             ExportSpringBone();
             //SpringBoneColliderをScriptableObjectとして保存する
@@ -119,6 +124,24 @@ namespace VRM
                         exportData, "Assets/Models/Resources/SpringBoneData/Collider/SpringBoneColliderData_"+j+".asset");
             }
         }
+
+        //フォルダ作成　フォルダがなければ作成する
+        void MakeFolder_OperatingFolders(){
+            string targetFolderPath = null;
+
+            targetFolderPath = OutputFolderName + "/SpringBoneData/Collider";
+
+            if (!Directory.Exists(targetFolderPath)) {
+                Directory.CreateDirectory(targetFolderPath);
+            }
+
+            targetFolderPath = OutputFolderName + "/SpringBoneData/SpringBone";
+
+            if (!Directory.Exists(targetFolderPath)) {
+                Directory.CreateDirectory(targetFolderPath);
+            }
+        }
+
 
         void OnWizardUpdate()
         {
