@@ -22,4 +22,4 @@ https://github.com/MrSlip777/LoadVRM/releases/tag/BlendShape
 メニューバーにてUniVRM-(バージョン名)を開くと以下のメニューが表示されます。<br>
 ・ReflectBlendShapes<br>
 
-![ウインドウ説明](https://user-images.githubusercontent.com/17643697/128622882-3e2a5a31-b8f7-415e-9f2c-a9a8a2ad2996.png,"ウインドウ説明")
+![ウインドウ説明](https://user-images.githubusercontent.com/17643697/128622882-3e2a5a31-b8f7-415e-9f2c-a9a8a2ad2996.png)
