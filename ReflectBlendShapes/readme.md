@@ -9,8 +9,8 @@ BlendShapeをVRM形式のモデルに反映する機能をUnityエディタに�
 本スクリプトはUnity上で動作します。<br>
 
 [動作確認済みの環境]<br>
-・Unity 2019.4.29.f1
-・UniVRM 0.79
+・Unity 2019.4.29.f1<br>
+・UniVRM 0.79<br>
 
 ### 0.1 導入
 1．Unityを起動する<br>
