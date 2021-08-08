@@ -10,7 +10,7 @@ BlendShapeをVRM形式のモデルに反映する機能をUnityエディタに�
 ・Unity 2019.4.29.f1
 ・UniVRM 0.79
 
-## 0.1 導入
+### 0.1 導入
 1．Unityを起動する<br>
 2．ReflectBlendShapes.unitypackageをダブルクリックして実行する<br>
 以下からDLします。
@@ -18,7 +18,7 @@ https://github.com/MrSlip777/LoadVRM/releases/tag/BlendShape
 
 3．Unity上でインポートウインドウが表示されるのでインポートを押下する<br>
 
-## 0.2 メニュー一覧
+### 0.2 メニュー一覧
 メニューバーにてUniVRM-(バージョン名)を開くと以下のメニューが表示されます。<br>
 ・ReflectBlendShapes<br>
 
