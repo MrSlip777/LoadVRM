@@ -63,19 +63,37 @@ namespace VRM
             srcDir = srcDir.Replace("\\","/");
             dstDir = dstDir.Replace("\\","/");
 
+            
+
+
             foreach (var item in srcFiles)
             {
                 string srcPath = null;
                 string dstPath = null;
-                string targetFile = null;
+                string srcFileName = null;
+                string dstFileName = null;
 
-                targetFile = System.IO.Path.GetFileName(item);
-                
+                if(sourceBlendShape.Clips[0].name
+                == destinationBlendShape.Clips[0].name){
+                    srcFileName = System.IO.Path.GetFileName(item);
+                    dstFileName =  srcFileName;                   
+                }
+                else{
+                    if(sourceBlendShape.Clips[0].name.Contains("BlendShape.")){
+                        srcFileName = System.IO.Path.GetFileName(item);
+                        dstFileName = srcFileName.Replace("BlendShape.","");
+                    }
+                    else{
+                        srcFileName = System.IO.Path.GetFileName(item);
+                        dstFileName = "BlendShape." + srcFileName;
+                    }
+                }
+
                 //BlendShape.assetでなければ、コピーする（各ブレンドシェイプをコピーする）
-                if(targetFile != RefName && targetFile.Contains(".meta") == false){
+                if(srcFileName != RefName && srcFileName.Contains(".meta") == false){
 
-                    srcPath = srcDir + "/" + targetFile;
-                    dstPath = dstDir + "/" + targetFile;
+                    srcPath = srcDir + "/" + srcFileName;
+                    dstPath = dstDir + "/" + dstFileName;
                 
                     File.Copy(srcPath, dstPath,true);
 
